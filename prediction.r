@@ -4,6 +4,8 @@ library(rpart)
 library(rpart.plot)
 library(dplyr)
 
+source("functions.r")
+
 # Data sets
 account <- read.csv("data/account.csv", sep = ";")
 card.test <- read.csv("data/card_test.csv", sep = ";")
@@ -13,34 +15,15 @@ disposition <- read.csv("data/disp.csv", sep = ";")
 demograph <- read.csv("data/district.csv", sep = ";")
 loan.test <- read.csv("data/loan_test.csv", sep = ";")
 loan.train <- read.csv("data/loan_train.csv", sep = ";")
-transactions.test <- read.csv("data/transactions_test.csv", sep = ";")
-transactions.train <- read.csv("data/transactions_train.csv", sep = ";")
+transactions.test <- read.csv("data/trans_test.csv", sep = ";")
+transactions.train <- read.csv("data/trans_train.csv", sep = ";")
 
-create_train_test <- function(data, size = 0.8, train = TRUE) {
-  n_row = nrow(data)
-  total_row = size * n_row
-  train_sample <- 1: total_row
-  if (train == TRUE) {
-    return (data[train_sample, ])
-  } else {
-    return (data[-train_sample, ])
-  }
-}
+# Build data set
+data <- loan.train
 
-generate.prediction <- function(data, prediction, toCSV = FALSE) {
-  for (row in 1:nrow(data)) {
-    data[row, "status"] <- prediction[[row]]
-  }
 
-  data <- select(data, c('loan_id', 'status'))
-  names(data) <- c('Id', 'Predicted')
-
-  if (toCSV) write.csv(data, "prediction.csv", row.names = FALSE)
-  else print(data)
-}
-
-data_train <- create_train_test(loan.train, 0.8, train = TRUE)
-data_test <- create_train_test(loan.train, 0.8, train = FALSE)
+data_train <- create_train_test(data, 0.8, train = TRUE)
+data_test <- create_train_test(data, 0.8, train = FALSE)
 
 fit <- rpart(status~., data = data_train, method = 'class')
 rpart.plot(fit, extra = 106)
