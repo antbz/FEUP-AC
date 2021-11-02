@@ -18,9 +18,16 @@ loan.train <- read.csv("data/loan_train.csv", sep = ";")
 transactions.test <- read.csv("data/trans_test.csv", sep = ";")
 transactions.train <- read.csv("data/trans_train.csv", sep = ";")
 
-# Build data set
+# Build train data set
 data <- loan.train
+data <- merge(data, account, by = "account_id", all.x = TRUE, suffixes = c('_loan', '_account'))
+#data <- merge(data, disposition, by = "account_id",  suffixes = c('', '_disp'))
+#data <- merge(data, card.train, by = "disp_id", all.x = TRUE,  suffixes = c('', '_card'))
+#data <- select(data, c('date_loan', 'amount', 'duration', 'payments', 'status', 'frequency', 'date_account', 'type', 'type_card', 'issued'))
 
+# Build test data set
+test <- loan.test
+test <- data <- merge(test, account, by = "account_id", all.x = TRUE, suffixes = c('_loan', '_account'))
 
 data_train <- create_train_test(data, 0.8, train = TRUE)
 data_test <- create_train_test(data, 0.8, train = FALSE)
@@ -37,7 +44,7 @@ accuracy_Test <- sum(diag(table_mat)) / sum(table_mat)
 
 print(paste('Accuracy for test', accuracy_Test))
 
-prediction <- predict(fit, loan.test, type = 'prob')
+prediction <- predict(fit, test, type = 'prob')
 
 generate.prediction(loan.test, prediction[,"-1"], toCSV = FALSE)
-´
+
