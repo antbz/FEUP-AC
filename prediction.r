@@ -3,6 +3,7 @@
 library(rpart)
 library(rpart.plot)
 library(dplyr)
+library(ROSE)
 
 source("functions.r")
 
@@ -21,13 +22,17 @@ transactions.train <- read.csv("data/trans_train.csv", sep = ";")
 # Build train data set
 data <- loan.train
 data <- merge(data, account, by = "account_id", all.x = TRUE, suffixes = c('_loan', '_account'))
-#data <- merge(data, disposition, by = "account_id",  suffixes = c('', '_disp'))
-#data <- merge(data, card.train, by = "disp_id", all.x = TRUE,  suffixes = c('', '_card'))
+
+disp.owners <- filter(disposition, type == "OWNER")
+data <- merge(data, disp.owners, by = "account_id",  suffixes = c('', '_disp'))
+data <- merge(data, card.train, by = "disp_id", all.x = TRUE,  suffixes = c('', '_card'))
 #data <- select(data, c('date_loan', 'amount', 'duration', 'payments', 'status', 'frequency', 'date_account', 'type', 'type_card', 'issued'))
 
 # Build test data set
 test <- loan.test
-test <- data <- merge(test, account, by = "account_id", all.x = TRUE, suffixes = c('_loan', '_account'))
+test <- merge(test, account, by = "account_id", all.x = TRUE, suffixes = c('_loan', '_account'))
+test <- merge(test, disp.owners, by = "account_id",  suffixes = c('', '_disp'))
+test <- merge(test, card.test, by = "disp_id", all.x = TRUE,  suffixes = c('', '_card'))
 
 data_train <- create_train_test(data, 0.8, train = TRUE)
 data_test <- create_train_test(data, 0.8, train = FALSE)
