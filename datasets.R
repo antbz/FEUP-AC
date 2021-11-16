@@ -116,10 +116,7 @@ get.train.dataset <- function() {
     mutate_if(is.factor, as.numeric) %>%
     dplyr::select(-c(loan_id, account_id, district_id, disp_id, client_id))
 
-  classes <- factor(data$status)
-  predictors <- dplyr::select(data, -status)
-
-  return (list("predictors" = predictors, "classes" = classes))
+  return (data)
 }
 
 get.test.dataset <- function() {
@@ -132,5 +129,5 @@ get.test.dataset <- function() {
     mutate_if(is.factor, as.numeric) %>%
     dplyr::select(-c(account_id, district_id, disp_id, client_id))
 
-  return (dplyr::select(data, -status))
+  return (data)
 }
