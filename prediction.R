@@ -35,10 +35,10 @@ for (i in 1:10) {
   testClasses <- classes[-trainFold]
 
   # lda (MASS)
-  # ldaFit <- lda(x = trainPredictors, grouping = trainClasses)
-  # ldaPredictions <- predict(ldaFit, newdata = testPredictors, type = "class")
-  # table_mat <- table(testClasses, ldaPredictions$class)
-  # fulllda[[i]] <- sum(diag(table_mat)) / sum(table_mat)
+  ldaFit <- lda(x = trainPredictors, grouping = trainClasses)
+  ldaPredictions <- predict(ldaFit, newdata = testPredictors, type = "class")
+  table_mat <- table(testClasses, ldaPredictions$class)
+  fulllda[[i]] <- sum(diag(table_mat)) / sum(table_mat)
 
   # knn3 (caret)
   knnFit <- knn3(x = trainPredictors, y = trainClasses, k = 5)
@@ -97,6 +97,7 @@ abline(0, 1, lty = 2)
 
 auc_ROCR <- performance(pred_ROCR, measure = "auc")
 auc_ROCR <- auc_ROCR@y.values[[1]]
+auc_ROCR
 
 plot(performance(pred_ROCR, "acc"))
 

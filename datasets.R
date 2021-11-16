@@ -37,7 +37,7 @@ account.dataset <- function() {
     mutate(account_year = date %/% 10000 + 1900) %>%
     mutate(account_month = date %% 10000 %/% 100) %>%
     mutate(account_day = date %% 100) %>%
-    dplyr::select(-date)
+    dplyr::select(-c(date, account_day))
 }
 
 client.dataset <- function() {
@@ -48,7 +48,7 @@ client.dataset <- function() {
     mutate(birth_day = birth_number %% 100) %>%
     mutate(gender = as.factor(ifelse(birth_month > 12, "women", "men"))) %>%
     mutate(birth_month = ifelse(birth_month > 12, birth_month - 50, birth_month)) %>%
-    dplyr::select(-birth_number)
+    dplyr::select(-c(birth_number, birth_day))
 }
 
 disposition.dataset <- function() {
@@ -79,7 +79,7 @@ loan.dataset <- function(train = TRUE) {
     mutate(loan_year = date %/% 10000 + 1900) %>%
     mutate(loan_month = date %% 10000 %/% 100) %>%
     mutate(loan_day = date %% 100) %>%
-    dplyr::select(-date)
+    dplyr::select(-c(date, loan_day))
 }
 
 card.dataset <- function(train = TRUE) {
@@ -91,7 +91,7 @@ card.dataset <- function(train = TRUE) {
     mutate(card_year = issued %/% 10000 + 1900) %>%
     mutate(card_month = issued %% 10000 %/% 100) %>%
     mutate(card_day = issued %% 100) %>%
-    dplyr::select(-issued)
+    dplyr::select(-c(issued, card_day))
 }
 
 demograph.dataset <- function() {
@@ -112,6 +112,7 @@ get.train.dataset <- function() {
     left_join(account, by = "account_id", suffix = c('_loan', '_account')) %>%
     left_join(disposition, by = "account_id", suffix = c('', '_disp')) %>%
     left_join(client, by = "client_id", suffix = c('', '_client')) %>%
+    # left_join(card, by = "disp_id", suffic =c('', '_card')) %>%
     mutate_if(is.factor, as.numeric) %>%
     dplyr::select(-c(loan_id, account_id, district_id, disp_id, client_id))
 
@@ -128,6 +129,7 @@ get.test.dataset <- function() {
     left_join(account, by = "account_id", suffix = c('_loan', '_account')) %>%
     left_join(disposition, by = "account_id", suffix = c('', '_disp')) %>%
     left_join(client, by = "client_id", suffix = c('', '_client')) %>%
+    mutate_if(is.factor, as.numeric) %>%
     dplyr::select(-c(account_id, district_id, disp_id, client_id))
 
   return (dplyr::select(data, -status))
