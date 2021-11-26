@@ -34,6 +34,12 @@ prepare.datasets <- function(train = TRUE) {
 account.dataset <- function() {
   account <- read.csv("data/account.csv", sep = ";")
   account <- dplyr::distinct(account)
+
+  missing.values <- sapply(account, function(x) sum(is.na(x)))
+  mv.account <- data.frame(missing.values)
+
+  summary(account)
+
   account <<- account %>%
     mutate(account_year = date %/% 10000 + 1900) %>%
     mutate(account_month = date %% 10000 %/% 100) %>%
@@ -57,6 +63,12 @@ age = function(from, to) {
 client.dataset <- function() {
   client <- read.csv("data/client.csv", sep = ";")
   client <- dplyr::distinct(client)
+
+  missing.values <- sapply(client, function(x) sum(is.na(x)))
+  mv.client <- data.frame(missing.values)
+
+  summary(account)
+
   client <<- client %>%
     mutate(birth_year = birth_number %/% 10000 + 1900) %>%
     mutate(birth_month = birth_number %% 10000 %/% 100) %>%
@@ -69,6 +81,12 @@ client.dataset <- function() {
 disposition.dataset <- function() {
   disposition <- read.csv("data/disp.csv", sep = ";")
   disposition <- dplyr::distinct(disposition)
+
+  missing.values <- sapply(disposition, function(x) sum(is.na(x)))
+  mv.disposition <- data.frame(missing.values)
+
+  summary(account)
+
   disposition <<- disposition %>%
     group_by(account_id) %>% mutate(n_clients = n()) %>% ungroup() %>%
     filter(type == "OWNER") %>%
@@ -80,6 +98,12 @@ transacions.dataset <- function(train = TRUE) {
   else transactions <- read.csv("data/trans_test.csv", sep = ";")
   # transactions <- read.csv("data/trans_train.csv", sep = ";")
   transactions <- dplyr::distinct(transactions)
+
+  missing.values <- sapply(transactions, function(x) sum(is.na(x)))
+  mv.transactions <- data.frame(missing.values)
+
+  summary(account)
+
   transactions <<- transactions %>%
     mutate(trans_year = date %/% 10000 + 1900) %>%
     mutate(trans_month = date %% 10000 %/% 100) %>%
@@ -91,6 +115,12 @@ loan.dataset <- function(train = TRUE) {
   else loan <- read.csv("data/loan_test.csv", sep = ";")
   # loan <- read.csv("data/loan_train.csv", sep = ";")
   loan <- dplyr::distinct(loan)
+
+  missing.values <- sapply(loan, function(x) sum(is.na(x)))
+  mv.loan <- data.frame(missing.values)
+
+  summary(account)
+
   loan <<- loan %>%
     mutate(loan_year = date %/% 10000 + 1900) %>%
     mutate(loan_month = date %% 10000 %/% 100) %>%
@@ -103,6 +133,12 @@ card.dataset <- function(train = TRUE) {
   else card <- read.csv("data/card_test.csv", sep = ";")
   # card <- read.csv("data/card_train.csv", sep = ";")
   card <- dplyr::distinct(card)
+
+  missing.values <- sapply(card, function(x) sum(is.na(x)))
+  mv.card <- data.frame(missing.values)
+
+  summary(account)
+
   card <<- card %>%
     mutate(card_year = issued %/% 10000 + 1900) %>%
     mutate(card_month = issued %% 10000 %/% 100) %>%
@@ -113,6 +149,12 @@ card.dataset <- function(train = TRUE) {
 demograph.dataset <- function() {
   demograph <- read.csv("data/district.csv", sep = ";")
   demograph <- dplyr::distinct(demograph)
+
+  missing.values <- sapply(demograph, function(x) sum(is.na(x)))
+  mv.demograph <- data.frame(missing.values)
+
+  summary(account)
+
   demograph <<- demograph %>%
     mutate(unemploymant.rate.95 = as.numeric(as.character(unemploymant.rate.95))) %>%
     mutate(no..of.commited.crimes.95 = as.numeric(as.character(no..of.commited.crimes.95))) %>%
@@ -129,10 +171,23 @@ get.train.dataset <- function() {
     left_join(account, by = "account_id", suffix = c('_loan', '_account')) %>%
     left_join(disposition, by = "account_id", suffix = c('', '_disp')) %>%
     left_join(client, by = "client_id", suffix = c('', '_client')) %>%
-    # left_join(card, by = "disp_id", suffic =c('', '_card')) %>%
+    left_join(card, by = "disp_id", suffix =c('', '_card')) %>%
     mutate_if(is.factor, as.numeric) %>%
     mutate(age = age(as.Date(paste(as.character(birth_year),as.character(birth_month),as.character(birth_day), sep="-")),as.Date(paste(as.character(loan_year),as.character(loan_month),as.character(loan_day), sep="-")))) %>%
     dplyr::select(-c(loan_id, account_id, district_id, disp_id, client_id, birth_year, birth_month, birth_day, loan_day))
+
+  # Verify NA
+  missing.values <- sapply(data, function(x) sum(is.na(x)))
+  mv.data <- data.frame(missing.values)
+  mv.data$total <- nrow(data)
+  mv.data$pct <- round((mv.data$missing.values / mv.data$total)*100)
+  summary(data)
+
+  #Card Info has too much missing values to be used
+  data <- mutate(data, has_card = ifelse(is.na(data$card_id),0,1)) %>%
+          dplyr::select(-c(card_id, type, card_month, card_year))
+
+  write.csv(data,file = "train_data.csv")
 
   return (data)
 }
@@ -148,6 +203,18 @@ get.test.dataset <- function() {
     mutate(age = age(as.Date(paste(as.character(birth_year),as.character(birth_month),as.character(birth_day), sep="-")),as.Date(paste(as.character(loan_year),as.character(loan_month),as.character(loan_day), sep="-")))) %>%
     dplyr::select(-c(loan_id, account_id, district_id, disp_id, client_id, birth_year, birth_month, birth_day, loan_day))
 
+  # Verify NA
+  missing.values <- sapply(data, function(x) sum(is.na(x)))
+  mv.data <- data.frame(missing.values)
+  mv.data$total <- nrow(data)
+  mv.data$pct <- round((mv.data$missing.values / mv.data$total)*100)
+  summary(data)
+
+  #Card Info has too much missing values to be used
+  data <- mutate(data, has_card = ifelse(is.na(data$card_id),0,1)) %>%
+    dplyr::select(-c(card_id, type, card_month, card_year))
+
+  write.csv(data,file = "test_Data.csv")
 
   return (data)
 }

@@ -4,6 +4,7 @@
 #    install.packages(x), x is a string with the name of the library
 
 library(tidyverse)
+library(ggplot2)
 library(rpart)
 library(rpart.plot)
 library(AppliedPredictiveModeling)
@@ -15,6 +16,7 @@ library(ROSE)
 library(Hmisc) # Correlation
 library(corrplot) # Correlation
 library(PerformanceAnalytics) # Correlation
+library(EnvStats)
 
 source("functions.R")
 source("datasets.R")
