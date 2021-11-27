@@ -4,6 +4,7 @@
 #    install.packages(x), x is a string with the name of the library
 
 library(tidyverse)
+library(skimr)
 library(ggplot2)
 library(rpart)
 library(rpart.plot)

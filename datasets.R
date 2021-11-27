@@ -37,8 +37,9 @@ account.dataset <- function() {
 
   missing.values <- sapply(account, function(x) sum(is.na(x)))
   mv.account <- data.frame(missing.values)
-
   summary(account)
+  account %>% skim()
+
 
   account <<- account %>%
     mutate(account_year = date %/% 10000 + 1900) %>%
@@ -66,8 +67,8 @@ client.dataset <- function() {
 
   missing.values <- sapply(client, function(x) sum(is.na(x)))
   mv.client <- data.frame(missing.values)
-
   summary(client)
+  client  %>% skim()
 
   client <<- client %>%
     mutate(birth_year = birth_number %/% 10000 + 1900) %>%
@@ -84,8 +85,8 @@ disposition.dataset <- function() {
 
   missing.values <- sapply(disposition, function(x) sum(is.na(x)))
   mv.disposition <- data.frame(missing.values)
-
   summary(disposition)
+  disposition %>% skim()
 
   disposition <<- disposition %>%
     group_by(account_id) %>% mutate(n_clients = n()) %>% ungroup() %>%
@@ -101,8 +102,8 @@ transacions.dataset <- function(train = TRUE) {
 
   missing.values <- sapply(transactions, function(x) sum(is.na(x)))
   mv.transactions <- data.frame(missing.values)
-
   summary(transactions)
+  transactions %>% skim()
 
   transactions <<- transactions %>%
     mutate(trans_year = date %/% 10000 + 1900) %>%
@@ -118,8 +119,8 @@ loan.dataset <- function(train = TRUE) {
 
   missing.values <- sapply(loan, function(x) sum(is.na(x)))
   mv.loan <- data.frame(missing.values)
-
   summary(loan)
+  loan %>% skim()
 
   loan <<- loan %>%
     mutate(loan_year = date %/% 10000 + 1900) %>%
@@ -136,8 +137,8 @@ card.dataset <- function(train = TRUE) {
 
   missing.values <- sapply(card, function(x) sum(is.na(x)))
   mv.card <- data.frame(missing.values)
-
   summary(card)
+  card %>% skim()
 
   card <<- card %>%
     mutate(card_year = issued %/% 10000 + 1900) %>%
@@ -152,8 +153,8 @@ demograph.dataset <- function() {
 
   missing.values <- sapply(demograph, function(x) sum(is.na(x)))
   mv.demograph <- data.frame(missing.values)
-
   summary(demograph)
+  demograph %>% skim()
 
   demograph <<- demograph %>%
     mutate(unemploymant.rate.95 = as.numeric(as.character(unemploymant.rate.95))) %>%
