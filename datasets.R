@@ -67,7 +67,7 @@ client.dataset <- function() {
   missing.values <- sapply(client, function(x) sum(is.na(x)))
   mv.client <- data.frame(missing.values)
 
-  summary(account)
+  summary(client)
 
   client <<- client %>%
     mutate(birth_year = birth_number %/% 10000 + 1900) %>%
@@ -85,7 +85,7 @@ disposition.dataset <- function() {
   missing.values <- sapply(disposition, function(x) sum(is.na(x)))
   mv.disposition <- data.frame(missing.values)
 
-  summary(account)
+  summary(disposition)
 
   disposition <<- disposition %>%
     group_by(account_id) %>% mutate(n_clients = n()) %>% ungroup() %>%
@@ -102,7 +102,7 @@ transacions.dataset <- function(train = TRUE) {
   missing.values <- sapply(transactions, function(x) sum(is.na(x)))
   mv.transactions <- data.frame(missing.values)
 
-  summary(account)
+  summary(transactions)
 
   transactions <<- transactions %>%
     mutate(trans_year = date %/% 10000 + 1900) %>%
@@ -119,7 +119,7 @@ loan.dataset <- function(train = TRUE) {
   missing.values <- sapply(loan, function(x) sum(is.na(x)))
   mv.loan <- data.frame(missing.values)
 
-  summary(account)
+  summary(loan)
 
   loan <<- loan %>%
     mutate(loan_year = date %/% 10000 + 1900) %>%
@@ -137,7 +137,7 @@ card.dataset <- function(train = TRUE) {
   missing.values <- sapply(card, function(x) sum(is.na(x)))
   mv.card <- data.frame(missing.values)
 
-  summary(account)
+  summary(card)
 
   card <<- card %>%
     mutate(card_year = issued %/% 10000 + 1900) %>%
@@ -153,7 +153,7 @@ demograph.dataset <- function() {
   missing.values <- sapply(demograph, function(x) sum(is.na(x)))
   mv.demograph <- data.frame(missing.values)
 
-  summary(account)
+  summary(demograph)
 
   demograph <<- demograph %>%
     mutate(unemploymant.rate.95 = as.numeric(as.character(unemploymant.rate.95))) %>%
@@ -199,6 +199,7 @@ get.test.dataset <- function() {
     left_join(account, by = "account_id", suffix = c('_loan', '_account')) %>%
     left_join(disposition, by = "account_id", suffix = c('', '_disp')) %>%
     left_join(client, by = "client_id", suffix = c('', '_client')) %>%
+    left_join(card, by = "disp_id", suffix =c('', '_card')) %>%
     mutate_if(is.factor, as.numeric) %>%
     mutate(age = age(as.Date(paste(as.character(birth_year),as.character(birth_month),as.character(birth_day), sep="-")),as.Date(paste(as.character(loan_year),as.character(loan_month),as.character(loan_day), sep="-")))) %>%
     dplyr::select(-c(loan_id, account_id, district_id, disp_id, client_id, birth_year, birth_month, birth_day, loan_day))
@@ -214,7 +215,7 @@ get.test.dataset <- function() {
   data <- mutate(data, has_card = ifelse(is.na(data$card_id),0,1)) %>%
     dplyr::select(-c(card_id, type, card_month, card_year))
 
-  write.csv(data,file = "test_Data.csv")
+  write.csv(data,file = "test_data.csv")
 
   return (data)
 }
