@@ -44,10 +44,10 @@ account.dataset <- function() {
     mutate(account_year = date %/% 10000 + 1900) %>%
     mutate(account_month = date %% 10000 %/% 100) %>%
     mutate(account_day = date %% 100) %>%
-    dplyr::select(-c(date, account_day))
-  account$frequency[account$frequency == "monthly issuance"] <- "monthly"
-  account$frequency[account$frequency == "weekly issuance"] <- "weekly"
-  account$frequency[account$frequency == "issuance after transaction"] <- "immediate"
+    dplyr::select(-c(date, account_day)) %>%
+    mutate(frequency = replace(frequency, frequency == "monthly issuance","monthly")) %>%
+    mutate(frequency = replace(frequency, frequency == "weekly issuance","weekly")) %>%
+    mutate(frequency = replace(frequency, frequency == "issuance after transaction","immediate"))
 }
 age = function(from, to) {
   from_lt = as.POSIXlt(from)
