@@ -196,11 +196,11 @@ demograph.dataset <- function() {
     rename("enterpreneurs_per_1000" = "no..of.enterpreneurs.per.1000.inhabitants") %>%
     rename("commited_crimes_95" = "no..of.commited.crimes.95") %>%
     rename("commited_crimes_96" = "no..of.commited.crimes.96") %>%
-    dplyr::select(-name)
-
-  demograph <<- demograph %>%
+    mutate(unemploymant_rate_95 = as.numeric(as.character(unemploymant_rate_95))) %>%
+    mutate(commited_crimes_95 = as.numeric(as.character(commited_crimes_95))) %>%
     mutate(unemploymant_rate_95 = ifelse(is.na(unemploymant_rate_95), mean(unemploymant_rate_95, na.rm=TRUE), unemploymant_rate_95)) %>%
-    mutate(commited_crimes_95 = ifelse(is.na(commited_crimes_95), mean(commited_crimes_95, na.rm=TRUE), commited_crimes_95))
+    mutate(commited_crimes_95 = ifelse(is.na(commited_crimes_95), mean(commited_crimes_95, na.rm=TRUE), commited_crimes_95)) %>%
+    dplyr::select(-name)
 
 
 }
