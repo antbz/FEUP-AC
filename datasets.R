@@ -282,16 +282,16 @@ get.train.dataset <- function() {
 
     # Join with transactions
     left_join(agg.transactions, by = "account_id") %>%
-    mutate(n_operation_per_day = n_operation / account_days) %>%
-    mutate(n_credit_per_day = n_credit / account_days) %>%
-    mutate(n_withdrawal_per_day = n_withdrawal / account_days) %>%
-    mutate(n_collect_bank_per_day = n_collect_bank / account_days) %>%
-    mutate(n_withdraw_card_per_day = n_withdraw_card / account_days) %>%
-    mutate(n_credit_cash_per_day = n_credit_cash / account_days) %>%
-    mutate(n_interest_per_day = n_interest / account_days) %>%
-    mutate(n_remittance_bank_per_day = n_remittance_bank / account_days) %>%
-    mutate(n_withdraw_cash_per_day = n_withdraw_cash / account_days) %>%
-    mutate(n_sanctions_per_day = n_sanctions / account_days) %>%
+    mutate(n_operation = n_operation / account_days) %>%
+    mutate(n_credit = n_credit / account_days) %>%
+    mutate(n_withdrawal = n_withdrawal / account_days) %>%
+    mutate(n_collect_bank = n_collect_bank / account_days) %>%
+    mutate(n_withdraw_card = n_withdraw_card / account_days) %>%
+    mutate(n_credit_cash = n_credit_cash / account_days) %>%
+    mutate(n_interest = n_interest / account_days) %>%
+    mutate(n_remittance_bank = n_remittance_bank / account_days) %>%
+    mutate(n_withdraw_cash = n_withdraw_cash / account_days) %>%
+    mutate(n_sanctions = n_sanctions / account_days) %>%
 
     # Drop unwanted columns
     dplyr::select(-c(
