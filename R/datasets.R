@@ -63,9 +63,9 @@ account.dataset <- function() {
     mutate(account_month = date %% 10000 %/% 100) %>%
     mutate(account_day = date %% 100) %>%
     mutate(frequency = recode(frequency,
-        "monthly issuance" = "monthly",
-        "weekly issuance" = "weekly",
-        "issuance after transaction" = "immediate"
+        "monthly issuance" = 3,
+        "weekly issuance" = 2,
+        "issuance after transaction" = 1
     )) %>%
     dplyr::select(-c(date, district_id))
 }
@@ -83,7 +83,7 @@ client.dataset <- function() {
     mutate(birth_year = birth_number %/% 10000 + 1900) %>%
     mutate(birth_month = birth_number %% 10000 %/% 100) %>%
     mutate(birth_day = birth_number %% 100) %>%
-    mutate(gender = as.factor(ifelse(birth_month > 12, "F", "M"))) %>%
+    mutate(gender = ifelse(birth_month > 12, 0, 1)) %>%
     mutate(birth_month = ifelse(birth_month > 12, birth_month - 50, birth_month)) %>%
     dplyr::select(-c(birth_number))
 }
