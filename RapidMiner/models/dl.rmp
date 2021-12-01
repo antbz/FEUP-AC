@@ -12,68 +12,106 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_train" width="90" x="45" y="34">
-        <parameter key="process_location" value="read_train"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
+      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize DL" width="90" x="179" y="34">
+        <list key="parameters">
+          <parameter key="Deep Learning.epochs" value="[0;25;1;quadratic]"/>
+          <parameter key="Deep Learning.activation" value="Tanh,Rectifier,Maxout,ExpRectifier"/>
+          <parameter key="Deep Learning.rho" value="[0.001;1;100;quadratic]"/>
+        </list>
+        <parameter key="error_handling" value="fail on error"/>
+        <parameter key="log_performance" value="true"/>
+        <parameter key="log_all_criteria" value="false"/>
+        <parameter key="synchronize" value="false"/>
+        <parameter key="enable_parallel_execution" value="true"/>
+        <process expanded="true">
+          <operator activated="true" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="112" y="34">
+            <parameter key="activation" value="Rectifier"/>
+            <enumeration key="hidden_layer_sizes">
+              <parameter key="hidden_layer_sizes" value="50"/>
+              <parameter key="hidden_layer_sizes" value="50"/>
+            </enumeration>
+            <enumeration key="hidden_dropout_ratios"/>
+            <parameter key="reproducible_(uses_1_thread)" value="false"/>
+            <parameter key="use_local_random_seed" value="false"/>
+            <parameter key="local_random_seed" value="1992"/>
+            <parameter key="epochs" value="10.0"/>
+            <parameter key="compute_variable_importances" value="false"/>
+            <parameter key="train_samples_per_iteration" value="-2"/>
+            <parameter key="adaptive_rate" value="true"/>
+            <parameter key="epsilon" value="1.0E-8"/>
+            <parameter key="rho" value="0.99"/>
+            <parameter key="learning_rate" value="0.005"/>
+            <parameter key="learning_rate_annealing" value="1.0E-6"/>
+            <parameter key="learning_rate_decay" value="1.0"/>
+            <parameter key="momentum_start" value="0.0"/>
+            <parameter key="momentum_ramp" value="1000000.0"/>
+            <parameter key="momentum_stable" value="0.0"/>
+            <parameter key="nesterov_accelerated_gradient" value="true"/>
+            <parameter key="standardize" value="true"/>
+            <parameter key="L1" value="1.0E-5"/>
+            <parameter key="L2" value="0.0"/>
+            <parameter key="max_w2" value="10.0"/>
+            <parameter key="loss_function" value="Automatic"/>
+            <parameter key="distribution_function" value="AUTO"/>
+            <parameter key="early_stopping" value="false"/>
+            <parameter key="stopping_rounds" value="1"/>
+            <parameter key="stopping_metric" value="AUTO"/>
+            <parameter key="stopping_tolerance" value="0.001"/>
+            <parameter key="missing_values_handling" value="MeanImputation"/>
+            <parameter key="max_runtime_seconds" value="0"/>
+            <list key="expert_parameters"/>
+            <list key="expert_parameters_"/>
+          </operator>
+          <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (6)" width="90" x="447" y="34">
+            <list key="application_parameters"/>
+            <parameter key="create_view" value="false"/>
+          </operator>
+          <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance Deep Learning" width="90" x="581" y="34">
+            <parameter key="manually_set_positive_class" value="false"/>
+            <parameter key="main_criterion" value="AUC"/>
+            <parameter key="accuracy" value="true"/>
+            <parameter key="classification_error" value="true"/>
+            <parameter key="kappa" value="false"/>
+            <parameter key="AUC (optimistic)" value="false"/>
+            <parameter key="AUC" value="true"/>
+            <parameter key="AUC (pessimistic)" value="false"/>
+            <parameter key="precision" value="true"/>
+            <parameter key="recall" value="true"/>
+            <parameter key="lift" value="false"/>
+            <parameter key="fallout" value="false"/>
+            <parameter key="f_measure" value="true"/>
+            <parameter key="false_positive" value="true"/>
+            <parameter key="false_negative" value="true"/>
+            <parameter key="true_positive" value="true"/>
+            <parameter key="true_negative" value="true"/>
+            <parameter key="sensitivity" value="true"/>
+            <parameter key="specificity" value="true"/>
+            <parameter key="youden" value="false"/>
+            <parameter key="positive_predictive_value" value="false"/>
+            <parameter key="negative_predictive_value" value="false"/>
+            <parameter key="psep" value="false"/>
+            <parameter key="skip_undefined_labels" value="true"/>
+            <parameter key="use_example_weights" value="true"/>
+          </operator>
+          <connect from_port="input 1" to_op="Deep Learning" to_port="training set"/>
+          <connect from_port="input 2" to_op="Apply Model (6)" to_port="unlabelled data"/>
+          <connect from_op="Deep Learning" from_port="model" to_op="Apply Model (6)" to_port="model"/>
+          <connect from_op="Apply Model (6)" from_port="labelled data" to_op="Performance Deep Learning" to_port="labelled data"/>
+          <connect from_op="Apply Model (6)" from_port="model" to_port="model"/>
+          <connect from_op="Performance Deep Learning" from_port="performance" to_port="performance"/>
+          <portSpacing port="source_input 1" spacing="0"/>
+          <portSpacing port="source_input 2" spacing="0"/>
+          <portSpacing port="source_input 3" spacing="0"/>
+          <portSpacing port="sink_performance" spacing="0"/>
+          <portSpacing port="sink_model" spacing="0"/>
+          <portSpacing port="sink_output 1" spacing="0"/>
+        </process>
       </operator>
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="82" name="Execute feature_sampling (2)" width="90" x="179" y="34">
-        <parameter key="process_location" value="feature_sampling"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="82" name="Execute svm" width="90" x="313" y="34">
-        <parameter key="process_location" value="models/svm"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_test" width="90" x="45" y="238">
-        <parameter key="process_location" value="read_test"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="true" class="nominal_to_numerical" compatibility="9.10.001" expanded="true" height="103" name="Nominal to Numerical (2)" width="90" x="246" y="238">
-        <parameter key="return_preprocessing_model" value="false"/>
-        <parameter key="create_view" value="false"/>
-        <parameter key="attribute_filter_type" value="all"/>
-        <parameter key="attribute" value=""/>
-        <parameter key="attributes" value=""/>
-        <parameter key="use_except_expression" value="false"/>
-        <parameter key="value_type" value="nominal"/>
-        <parameter key="use_value_type_exception" value="false"/>
-        <parameter key="except_value_type" value="file_path"/>
-        <parameter key="block_type" value="single_value"/>
-        <parameter key="use_block_type_exception" value="false"/>
-        <parameter key="except_block_type" value="single_value"/>
-        <parameter key="invert_selection" value="false"/>
-        <parameter key="include_special_attributes" value="false"/>
-        <parameter key="coding_type" value="dummy coding"/>
-        <parameter key="use_comparison_groups" value="false"/>
-        <list key="comparison_groups"/>
-        <parameter key="unexpected_value_handling" value="all 0 and warning"/>
-        <parameter key="use_underscore_in_name" value="false"/>
-      </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply SVM" width="90" x="447" y="136">
+      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (2)" width="90" x="179" y="289">
         <list key="application_parameters"/>
         <parameter key="create_view" value="false"/>
       </operator>
-      <operator activated="true" class="select_attributes" compatibility="9.10.001" expanded="true" height="82" name="Select Attributes (2)" width="90" x="581" y="136">
+      <operator activated="true" class="select_attributes" compatibility="9.10.001" expanded="true" height="82" name="Select Attributes (2)" width="90" x="313" y="289">
         <parameter key="attribute_filter_type" value="subset"/>
         <parameter key="attribute" value=""/>
         <parameter key="attributes" value="confidence(-1)"/>
@@ -87,7 +125,7 @@
         <parameter key="invert_selection" value="false"/>
         <parameter key="include_special_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="blending:rename" compatibility="9.10.001" expanded="true" height="82" name="Rename (2)" width="90" x="715" y="136">
+      <operator activated="true" class="blending:rename" compatibility="9.10.001" expanded="true" height="82" name="Rename (2)" width="90" x="514" y="289">
         <list key="rename attributes">
           <parameter key="prediction(status)" value="prediction"/>
           <parameter key="confidence(1)" value="positive"/>
@@ -96,8 +134,8 @@
         <parameter key="from_attribute" value=""/>
         <parameter key="to_attribute" value=""/>
       </operator>
-      <operator activated="true" class="write_csv" compatibility="9.10.001" expanded="true" height="82" name="Write SVM" width="90" x="849" y="136">
-        <parameter key="csv_file" value="C:/Users/Acer/Desktop/FEUP/FEUP-AC/prediction_svm.csv"/>
+      <operator activated="true" class="write_csv" compatibility="9.10.001" expanded="true" height="82" name="Write CSV (2)" width="90" x="715" y="289">
+        <parameter key="csv_file" value="C:/Users/Acer/Desktop/FEUP/FEUP-AC/prediction_dl.csv"/>
         <parameter key="column_separator" value=";"/>
         <parameter key="write_attribute_names" value="true"/>
         <parameter key="quote_nominal_values" value="true"/>
@@ -106,19 +144,20 @@
         <parameter key="append_to_file" value="false"/>
         <parameter key="encoding" value="SYSTEM"/>
       </operator>
-      <connect from_op="Execute read_train" from_port="result 1" to_op="Execute feature_sampling (2)" to_port="input 1"/>
-      <connect from_op="Execute feature_sampling (2)" from_port="result 1" to_op="Execute svm" to_port="input 1"/>
-      <connect from_op="Execute feature_sampling (2)" from_port="result 2" to_op="Execute svm" to_port="input 2"/>
-      <connect from_op="Execute svm" from_port="result 1" to_port="result 1"/>
-      <connect from_op="Execute svm" from_port="result 2" to_op="Apply SVM" to_port="model"/>
-      <connect from_op="Execute read_test" from_port="result 1" to_op="Nominal to Numerical (2)" to_port="example set input"/>
-      <connect from_op="Nominal to Numerical (2)" from_port="example set output" to_op="Apply SVM" to_port="unlabelled data"/>
-      <connect from_op="Apply SVM" from_port="labelled data" to_op="Select Attributes (2)" to_port="example set input"/>
+      <connect from_port="input 1" to_op="Optimize DL" to_port="input 1"/>
+      <connect from_port="input 2" to_op="Apply Model (2)" to_port="unlabelled data"/>
+      <connect from_op="Optimize DL" from_port="performance" to_port="result 1"/>
+      <connect from_op="Optimize DL" from_port="model" to_op="Apply Model (2)" to_port="model"/>
+      <connect from_op="Apply Model (2)" from_port="labelled data" to_op="Select Attributes (2)" to_port="example set input"/>
       <connect from_op="Select Attributes (2)" from_port="example set output" to_op="Rename (2)" to_port="example set input"/>
-      <connect from_op="Rename (2)" from_port="example set output" to_op="Write SVM" to_port="input"/>
+      <connect from_op="Rename (2)" from_port="example set output" to_op="Write CSV (2)" to_port="input"/>
+      <connect from_op="Write CSV (2)" from_port="through" to_port="result 2"/>
       <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="source_input 2" spacing="0"/>
+      <portSpacing port="source_input 3" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
+      <portSpacing port="sink_result 3" spacing="0"/>
     </process>
   </operator>
 </process>
