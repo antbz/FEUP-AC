@@ -50,7 +50,7 @@ prepare.datasets <- function(train = TRUE) {
 }
 
 account.dataset <- function() {
-  account <- read.csv("data/account.csv", sep = ";")
+  account <- read.csv("../data/account.csv", sep = ";")
   account <- dplyr::distinct(account)
 
   # missing.values <- sapply(account, function(x) sum(is.na(x)))
@@ -71,7 +71,7 @@ account.dataset <- function() {
 }
 
 client.dataset <- function() {
-  client <- read.csv("data/client.csv", sep = ";")
+  client <- read.csv("../data/client.csv", sep = ";")
   client <- dplyr::distinct(client)
 
   # missing.values <- sapply(client, function(x) sum(is.na(x)))
@@ -89,7 +89,7 @@ client.dataset <- function() {
 }
 
 disposition.dataset <- function() {
-  disposition <- read.csv("data/disp.csv", sep = ";")
+  disposition <- read.csv("../data/disp.csv", sep = ";")
   disposition <- dplyr::distinct(disposition)
 
   # missing.values <- sapply(disposition, function(x) sum(is.na(x)))
@@ -104,8 +104,8 @@ disposition.dataset <- function() {
 }
 
 transacions.dataset <- function(train = TRUE) {
-  if (train) transactions <- read.csv("data/trans_train.csv", sep = ";")
-  else transactions <- read.csv("data/trans_test.csv", sep = ";")
+  if (train) transactions <- read.csv("../data/trans_train.csv", sep = ";")
+  else transactions <- read.csv("../data/trans_test.csv", sep = ";")
 
   transactions <- dplyr::distinct(transactions)
 
@@ -138,8 +138,8 @@ transacions.dataset <- function(train = TRUE) {
 }
 
 loan.dataset <- function(train = TRUE) {
-  if (train) loan <- read.csv("data/loan_train.csv", sep = ";")
-  else loan <- read.csv("data/loan_test.csv", sep = ";")
+  if (train) loan <- read.csv("../data/loan_train.csv", sep = ";")
+  else loan <- read.csv("../data/loan_test.csv", sep = ";")
   # loan <- read.csv("data/loan_train.csv", sep = ";")
   loan <- dplyr::distinct(loan)
 
@@ -156,8 +156,8 @@ loan.dataset <- function(train = TRUE) {
 }
 
 card.dataset <- function(train = TRUE) {
-  if (train) card <- read.csv("data/card_train.csv", sep = ";")
-  else card <- read.csv("data/card_test.csv", sep = ";")
+  if (train) card <- read.csv("../data/card_train.csv", sep = ";")
+  else card <- read.csv("../data/card_test.csv", sep = ";")
   # card <- read.csv("data/card_train.csv", sep = ";")
   card <- dplyr::distinct(card)
 
@@ -174,7 +174,7 @@ card.dataset <- function(train = TRUE) {
 }
 
 demograph.dataset <- function() {
-  demograph <- read.csv("data/district.csv", sep = ";")
+  demograph <- read.csv("../data/district.csv", sep = ";")
   demograph <- dplyr::distinct(demograph)
 
   # missing.values <- sapply(demograph, function(x) sum(is.na(x)))
@@ -313,7 +313,7 @@ get.train.dataset <- function() {
   # mv.data$pct <- round((mv.data$missing.values / mv.data$total)*100)
   # summary(data)
   #
-  write.csv(data, file = "train_data.csv")
+  write.csv(data, file = "../train_data.csv")
 
   return (data)
 }
@@ -379,7 +379,7 @@ get.test.dataset <- function() {
   # summary(data)
   #
 
-  write.csv(data,file = "test_data.csv")
+  write.csv(data,file = "../test_data.csv")
 
   return (data)
 }
