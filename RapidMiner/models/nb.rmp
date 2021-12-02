@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize NB" width="90" x="447" y="85">
+      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize NB" width="90" x="447" y="34">
         <list key="parameters">
           <parameter key="Naive Bayes.laplace_correction" value="true,false"/>
         </list>
@@ -22,7 +22,7 @@
         <parameter key="synchronize" value="false"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="naive_bayes" compatibility="9.10.001" expanded="true" height="82" name="Naive Bayes" width="90" x="179" y="34">
+          <operator activated="true" breakpoints="before" class="naive_bayes" compatibility="9.10.001" expanded="true" height="82" name="Naive Bayes" width="90" x="179" y="34">
             <parameter key="laplace_correction" value="true"/>
           </operator>
           <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (4)" width="90" x="380" y="34">
@@ -30,7 +30,8 @@
             <parameter key="create_view" value="false"/>
           </operator>
           <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance Naive Bayes" width="90" x="581" y="34">
-            <parameter key="manually_set_positive_class" value="false"/>
+            <parameter key="manually_set_positive_class" value="true"/>
+            <parameter key="positive_class" value="-1"/>
             <parameter key="main_criterion" value="AUC"/>
             <parameter key="accuracy" value="true"/>
             <parameter key="classification_error" value="true"/>
@@ -74,12 +75,14 @@
       <connect from_port="input 2" to_op="Optimize NB" to_port="input 2"/>
       <connect from_op="Optimize NB" from_port="performance" to_port="result 1"/>
       <connect from_op="Optimize NB" from_port="model" to_port="result 2"/>
+      <connect from_op="Optimize NB" from_port="parameter set" to_port="result 3"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="source_input 3" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
       <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
     </process>
   </operator>
 </process>

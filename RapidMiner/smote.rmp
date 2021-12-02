@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><process version="9.10.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="9.10.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="operator_toolbox:smote" compatibility="2.12.000" expanded="true" height="82" name="SMOTE Upsampling" width="90" x="514" y="34">
+        <parameter key="number_of_neighbours" value="5"/>
+        <parameter key="normalize" value="true"/>
+        <parameter key="equalize_classes" value="true"/>
+        <parameter key="upsampling_size" value="1000"/>
+        <parameter key="auto_detect_minority_class" value="true"/>
+        <parameter key="round_integers" value="true"/>
+        <parameter key="nominal_change_rate" value="0.5"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+      </operator>
+      <connect from_port="input 1" to_op="SMOTE Upsampling" to_port="exa"/>
+      <connect from_op="SMOTE Upsampling" from_port="ups" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="source_input 2" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>

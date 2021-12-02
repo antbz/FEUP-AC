@@ -12,10 +12,9 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize DL" width="90" x="179" y="34">
+      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize DL" width="90" x="246" y="34">
         <list key="parameters">
-          <parameter key="Deep Learning.epochs" value="[0;25;1;quadratic]"/>
-          <parameter key="Deep Learning.activation" value="Tanh,Rectifier,Maxout,ExpRectifier"/>
+          <parameter key="Deep Learning.epochs" value="[0;50;1;quadratic]"/>
           <parameter key="Deep Learning.rho" value="[0.001;1;100;quadratic]"/>
         </list>
         <parameter key="error_handling" value="fail on error"/>
@@ -24,8 +23,8 @@
         <parameter key="synchronize" value="false"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="112" y="34">
-            <parameter key="activation" value="Rectifier"/>
+          <operator activated="true" class="h2o:deep_learning" compatibility="9.10.001" expanded="true" height="103" name="Deep Learning" width="90" x="179" y="34">
+            <parameter key="activation" value="Tanh"/>
             <enumeration key="hidden_layer_sizes">
               <parameter key="hidden_layer_sizes" value="50"/>
               <parameter key="hidden_layer_sizes" value="50"/>
@@ -67,7 +66,8 @@
             <parameter key="create_view" value="false"/>
           </operator>
           <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance Deep Learning" width="90" x="581" y="34">
-            <parameter key="manually_set_positive_class" value="false"/>
+            <parameter key="manually_set_positive_class" value="true"/>
+            <parameter key="positive_class" value="-1"/>
             <parameter key="main_criterion" value="AUC"/>
             <parameter key="accuracy" value="true"/>
             <parameter key="classification_error" value="true"/>
@@ -107,57 +107,18 @@
           <portSpacing port="sink_output 1" spacing="0"/>
         </process>
       </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (2)" width="90" x="179" y="289">
-        <list key="application_parameters"/>
-        <parameter key="create_view" value="false"/>
-      </operator>
-      <operator activated="true" class="select_attributes" compatibility="9.10.001" expanded="true" height="82" name="Select Attributes (2)" width="90" x="313" y="289">
-        <parameter key="attribute_filter_type" value="subset"/>
-        <parameter key="attribute" value=""/>
-        <parameter key="attributes" value="confidence(-1)"/>
-        <parameter key="use_except_expression" value="false"/>
-        <parameter key="value_type" value="attribute_value"/>
-        <parameter key="use_value_type_exception" value="false"/>
-        <parameter key="except_value_type" value="time"/>
-        <parameter key="block_type" value="attribute_block"/>
-        <parameter key="use_block_type_exception" value="false"/>
-        <parameter key="except_block_type" value="value_matrix_row_start"/>
-        <parameter key="invert_selection" value="false"/>
-        <parameter key="include_special_attributes" value="false"/>
-      </operator>
-      <operator activated="true" class="blending:rename" compatibility="9.10.001" expanded="true" height="82" name="Rename (2)" width="90" x="514" y="289">
-        <list key="rename attributes">
-          <parameter key="prediction(status)" value="prediction"/>
-          <parameter key="confidence(1)" value="positive"/>
-          <parameter key="confidence(-1)" value="negative"/>
-        </list>
-        <parameter key="from_attribute" value=""/>
-        <parameter key="to_attribute" value=""/>
-      </operator>
-      <operator activated="true" class="write_csv" compatibility="9.10.001" expanded="true" height="82" name="Write CSV (2)" width="90" x="715" y="289">
-        <parameter key="csv_file" value="C:/Users/Acer/Desktop/FEUP/FEUP-AC/prediction_dl.csv"/>
-        <parameter key="column_separator" value=";"/>
-        <parameter key="write_attribute_names" value="true"/>
-        <parameter key="quote_nominal_values" value="true"/>
-        <parameter key="format_date_attributes" value="true"/>
-        <parameter key="date_format" value="yyyy-MM-dd HH:mm:ss"/>
-        <parameter key="append_to_file" value="false"/>
-        <parameter key="encoding" value="SYSTEM"/>
-      </operator>
       <connect from_port="input 1" to_op="Optimize DL" to_port="input 1"/>
-      <connect from_port="input 2" to_op="Apply Model (2)" to_port="unlabelled data"/>
+      <connect from_port="input 2" to_op="Optimize DL" to_port="input 2"/>
       <connect from_op="Optimize DL" from_port="performance" to_port="result 1"/>
-      <connect from_op="Optimize DL" from_port="model" to_op="Apply Model (2)" to_port="model"/>
-      <connect from_op="Apply Model (2)" from_port="labelled data" to_op="Select Attributes (2)" to_port="example set input"/>
-      <connect from_op="Select Attributes (2)" from_port="example set output" to_op="Rename (2)" to_port="example set input"/>
-      <connect from_op="Rename (2)" from_port="example set output" to_op="Write CSV (2)" to_port="input"/>
-      <connect from_op="Write CSV (2)" from_port="through" to_port="result 2"/>
+      <connect from_op="Optimize DL" from_port="model" to_port="result 2"/>
+      <connect from_op="Optimize DL" from_port="parameter set" to_port="result 3"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="source_input 3" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
       <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
     </process>
   </operator>
 </process>
