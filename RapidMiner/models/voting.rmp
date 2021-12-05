@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="vote" compatibility="9.10.001" expanded="true" height="68" name="Vote" width="90" x="246" y="34">
+      <operator activated="true" class="vote" compatibility="9.10.001" expanded="true" height="68" name="Vote" width="90" x="179" y="34">
         <process expanded="true">
           <operator activated="true" class="concurrency:parallel_random_forest" compatibility="9.10.001" expanded="true" height="103" name="Random Forest" width="90" x="313" y="34">
             <parameter key="number_of_trees" value="2"/>
@@ -97,7 +97,7 @@
           <portSpacing port="sink_base model 4" spacing="0"/>
         </process>
       </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (8)" width="90" x="447" y="34">
+      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model" width="90" x="380" y="34">
         <list key="application_parameters"/>
         <parameter key="create_view" value="false"/>
       </operator>
@@ -130,10 +130,10 @@
         <parameter key="use_example_weights" value="true"/>
       </operator>
       <connect from_port="input 1" to_op="Vote" to_port="training set"/>
-      <connect from_port="input 2" to_op="Apply Model (8)" to_port="unlabelled data"/>
-      <connect from_op="Vote" from_port="model" to_op="Apply Model (8)" to_port="model"/>
-      <connect from_op="Apply Model (8)" from_port="labelled data" to_op="Performance Vote" to_port="labelled data"/>
-      <connect from_op="Apply Model (8)" from_port="model" to_port="result 2"/>
+      <connect from_port="input 2" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="Vote" from_port="model" to_op="Apply Model" to_port="model"/>
+      <connect from_op="Apply Model" from_port="labelled data" to_op="Performance Vote" to_port="labelled data"/>
+      <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
       <connect from_op="Performance Vote" from_port="performance" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>

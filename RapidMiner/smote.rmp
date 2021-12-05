@@ -12,6 +12,24 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
+      <operator activated="false" class="sample" compatibility="9.10.001" expanded="true" height="82" name="Sample" width="90" x="313" y="34">
+        <parameter key="sample" value="absolute"/>
+        <parameter key="balance_data" value="true"/>
+        <parameter key="sample_size" value="100"/>
+        <parameter key="sample_ratio" value="0.1"/>
+        <parameter key="sample_probability" value="0.1"/>
+        <list key="sample_size_per_class">
+          <parameter key="1" value="141"/>
+          <parameter key="-1" value="44"/>
+        </list>
+        <list key="sample_ratio_per_class">
+          <parameter key="-1" value="0.5"/>
+          <parameter key="1" value="0.5"/>
+        </list>
+        <list key="sample_probability_per_class"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+      </operator>
       <operator activated="true" class="operator_toolbox:smote" compatibility="2.12.000" expanded="true" height="82" name="SMOTE Upsampling" width="90" x="514" y="34">
         <parameter key="number_of_neighbours" value="5"/>
         <parameter key="normalize" value="true"/>

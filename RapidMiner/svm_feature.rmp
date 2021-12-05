@@ -21,7 +21,7 @@
         <list key="macros"/>
         <parameter key="fail_for_unknown_macros" value="true"/>
       </operator>
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="82" name="Execute feature_sampling (2)" width="90" x="179" y="34">
+      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="124" name="Execute feature_sampling (2)" width="90" x="179" y="34">
         <parameter key="process_location" value="feature_sampling"/>
         <parameter key="use_input" value="true"/>
         <parameter key="store_output" value="false"/>

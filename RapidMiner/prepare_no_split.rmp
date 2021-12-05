@@ -12,28 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="multiply" compatibility="9.10.001" expanded="true" height="103" name="Multiply" width="90" x="179" y="34"/>
-      <operator activated="true" class="filter_examples" compatibility="9.10.001" expanded="true" height="103" name="Filter &gt;95" width="90" x="313" y="187">
-        <parameter key="parameter_expression" value=""/>
-        <parameter key="condition_class" value="custom_filters"/>
-        <parameter key="invert_filter" value="false"/>
-        <list key="filters_list">
-          <parameter key="filters_entry_key" value="loan_year.gt.1995"/>
-        </list>
-        <parameter key="filters_logic_and" value="true"/>
-        <parameter key="filters_check_metadata" value="true"/>
-      </operator>
-      <operator activated="true" class="filter_examples" compatibility="9.10.001" expanded="true" height="103" name="Filter &lt;=95" width="90" x="313" y="34">
-        <parameter key="parameter_expression" value=""/>
-        <parameter key="condition_class" value="custom_filters"/>
-        <parameter key="invert_filter" value="false"/>
-        <list key="filters_list">
-          <parameter key="filters_entry_key" value="loan_year.le.1995"/>
-        </list>
-        <parameter key="filters_logic_and" value="true"/>
-        <parameter key="filters_check_metadata" value="true"/>
-      </operator>
-      <operator activated="true" class="subprocess" compatibility="9.10.001" expanded="true" height="82" name="Eliminate Correlated" width="90" x="447" y="34">
+      <operator activated="true" class="subprocess" compatibility="9.10.001" expanded="true" height="82" name="Eliminate Correlated" width="90" x="380" y="34">
         <process expanded="true">
           <operator activated="true" class="concurrency:correlation_matrix" compatibility="9.10.001" expanded="true" height="103" name="Correlation Matrix" width="90" x="380" y="34">
             <parameter key="attribute_filter_type" value="all"/>
@@ -68,17 +47,12 @@
           <portSpacing port="sink_out 2" spacing="0"/>
         </process>
       </operator>
-      <connect from_port="input 1" to_op="Multiply" to_port="input"/>
-      <connect from_op="Multiply" from_port="output 1" to_op="Filter &lt;=95" to_port="example set input"/>
-      <connect from_op="Multiply" from_port="output 2" to_op="Filter &gt;95" to_port="example set input"/>
-      <connect from_op="Filter &gt;95" from_port="example set output" to_port="result 2"/>
-      <connect from_op="Filter &lt;=95" from_port="example set output" to_op="Eliminate Correlated" to_port="in 1"/>
+      <connect from_port="input 1" to_op="Eliminate Correlated" to_port="in 1"/>
       <connect from_op="Eliminate Correlated" from_port="out 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
-      <portSpacing port="sink_result 3" spacing="0"/>
     </process>
   </operator>
 </process>

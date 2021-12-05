@@ -54,12 +54,13 @@
         <parameter key="unexpected_value_handling" value="all 0 and warning"/>
         <parameter key="use_underscore_in_name" value="false"/>
       </operator>
-      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize SVM" width="90" x="447" y="34">
+      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize Bagging" width="90" x="447" y="34">
         <list key="parameters">
           <parameter key="SVM.kernel_type" value="polynomial"/>
           <parameter key="SVM.C" value="[-1;10;100;quadratic]"/>
           <parameter key="SVM.convergence_epsilon" value="[0.001;1;10;quadratic]"/>
-          <parameter key="SVM.L_neg" value="[0.0;1;10;quadratic]"/>
+          <parameter key="Bagging.average_confidences" value="true,false"/>
+          <parameter key="Bagging.iterations" value="10"/>
         </list>
         <parameter key="error_handling" value="fail on error"/>
         <parameter key="log_performance" value="true"/>
@@ -67,38 +68,51 @@
         <parameter key="synchronize" value="false"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="support_vector_machine" compatibility="9.10.001" expanded="true" height="124" name="SVM" width="90" x="179" y="34">
-            <parameter key="kernel_type" value="dot"/>
-            <parameter key="kernel_gamma" value="1.0"/>
-            <parameter key="kernel_sigma1" value="1.0"/>
-            <parameter key="kernel_sigma2" value="0.0"/>
-            <parameter key="kernel_sigma3" value="2.0"/>
-            <parameter key="kernel_shift" value="1.0"/>
-            <parameter key="kernel_degree" value="2.0"/>
-            <parameter key="kernel_a" value="1.0"/>
-            <parameter key="kernel_b" value="0.0"/>
-            <parameter key="kernel_cache" value="200"/>
-            <parameter key="C" value="0.0"/>
-            <parameter key="convergence_epsilon" value="0.001"/>
-            <parameter key="max_iterations" value="100000"/>
-            <parameter key="scale" value="true"/>
-            <parameter key="calculate_weights" value="true"/>
-            <parameter key="return_optimization_performance" value="true"/>
-            <parameter key="L_pos" value="1.0"/>
-            <parameter key="L_neg" value="0.8"/>
-            <parameter key="epsilon" value="0.0"/>
-            <parameter key="epsilon_plus" value="0.0"/>
-            <parameter key="epsilon_minus" value="0.0"/>
-            <parameter key="balance_cost" value="false"/>
-            <parameter key="quadratic_loss_pos" value="false"/>
-            <parameter key="quadratic_loss_neg" value="false"/>
-            <parameter key="estimate_performance" value="false"/>
+          <operator activated="true" class="bagging" compatibility="9.10.001" expanded="true" height="82" name="Bagging" width="90" x="179" y="34">
+            <parameter key="sample_ratio" value="1.0"/>
+            <parameter key="iterations" value="10"/>
+            <parameter key="average_confidences" value="true"/>
+            <parameter key="use_local_random_seed" value="false"/>
+            <parameter key="local_random_seed" value="1992"/>
+            <process expanded="true">
+              <operator activated="true" class="support_vector_machine" compatibility="9.10.001" expanded="true" height="124" name="SVM" width="90" x="380" y="34">
+                <parameter key="kernel_type" value="dot"/>
+                <parameter key="kernel_gamma" value="1.0"/>
+                <parameter key="kernel_sigma1" value="1.0"/>
+                <parameter key="kernel_sigma2" value="0.0"/>
+                <parameter key="kernel_sigma3" value="2.0"/>
+                <parameter key="kernel_shift" value="1.0"/>
+                <parameter key="kernel_degree" value="2.0"/>
+                <parameter key="kernel_a" value="1.0"/>
+                <parameter key="kernel_b" value="0.0"/>
+                <parameter key="kernel_cache" value="200"/>
+                <parameter key="C" value="0.0"/>
+                <parameter key="convergence_epsilon" value="0.001"/>
+                <parameter key="max_iterations" value="100000"/>
+                <parameter key="scale" value="true"/>
+                <parameter key="calculate_weights" value="true"/>
+                <parameter key="return_optimization_performance" value="true"/>
+                <parameter key="L_pos" value="1.0"/>
+                <parameter key="L_neg" value="0.9"/>
+                <parameter key="epsilon" value="0.0"/>
+                <parameter key="epsilon_plus" value="0.0"/>
+                <parameter key="epsilon_minus" value="0.0"/>
+                <parameter key="balance_cost" value="false"/>
+                <parameter key="quadratic_loss_pos" value="false"/>
+                <parameter key="quadratic_loss_neg" value="false"/>
+                <parameter key="estimate_performance" value="false"/>
+              </operator>
+              <connect from_port="training set" to_op="SVM" to_port="training set"/>
+              <connect from_op="SVM" from_port="model" to_port="model"/>
+              <portSpacing port="source_training set" spacing="0"/>
+              <portSpacing port="sink_model" spacing="0"/>
+            </process>
           </operator>
           <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply Model (8)" width="90" x="380" y="34">
             <list key="application_parameters"/>
             <parameter key="create_view" value="false"/>
           </operator>
-          <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance SVM" width="90" x="514" y="34">
+          <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance SVM_Bagging" width="90" x="648" y="34">
             <parameter key="manually_set_positive_class" value="true"/>
             <parameter key="positive_class" value="-1"/>
             <parameter key="main_criterion" value="AUC"/>
@@ -126,12 +140,12 @@
             <parameter key="skip_undefined_labels" value="true"/>
             <parameter key="use_example_weights" value="true"/>
           </operator>
-          <connect from_port="input 1" to_op="SVM" to_port="training set"/>
+          <connect from_port="input 1" to_op="Bagging" to_port="training set"/>
           <connect from_port="input 2" to_op="Apply Model (8)" to_port="unlabelled data"/>
-          <connect from_op="SVM" from_port="model" to_op="Apply Model (8)" to_port="model"/>
-          <connect from_op="Apply Model (8)" from_port="labelled data" to_op="Performance SVM" to_port="labelled data"/>
+          <connect from_op="Bagging" from_port="model" to_op="Apply Model (8)" to_port="model"/>
+          <connect from_op="Apply Model (8)" from_port="labelled data" to_op="Performance SVM_Bagging" to_port="labelled data"/>
           <connect from_op="Apply Model (8)" from_port="model" to_port="model"/>
-          <connect from_op="Performance SVM" from_port="performance" to_port="performance"/>
+          <connect from_op="Performance SVM_Bagging" from_port="performance" to_port="performance"/>
           <portSpacing port="source_input 1" spacing="0"/>
           <portSpacing port="source_input 2" spacing="0"/>
           <portSpacing port="source_input 3" spacing="0"/>
@@ -142,11 +156,11 @@
       </operator>
       <connect from_port="input 1" to_op="Nominal to Numerical" to_port="example set input"/>
       <connect from_port="input 2" to_op="Nominal to Numerical (2)" to_port="example set input"/>
-      <connect from_op="Nominal to Numerical" from_port="example set output" to_op="Optimize SVM" to_port="input 1"/>
-      <connect from_op="Nominal to Numerical (2)" from_port="example set output" to_op="Optimize SVM" to_port="input 2"/>
-      <connect from_op="Optimize SVM" from_port="performance" to_port="result 1"/>
-      <connect from_op="Optimize SVM" from_port="model" to_port="result 2"/>
-      <connect from_op="Optimize SVM" from_port="parameter set" to_port="result 3"/>
+      <connect from_op="Nominal to Numerical" from_port="example set output" to_op="Optimize Bagging" to_port="input 1"/>
+      <connect from_op="Nominal to Numerical (2)" from_port="example set output" to_op="Optimize Bagging" to_port="input 2"/>
+      <connect from_op="Optimize Bagging" from_port="performance" to_port="result 1"/>
+      <connect from_op="Optimize Bagging" from_port="model" to_port="result 2"/>
+      <connect from_op="Optimize Bagging" from_port="parameter set" to_port="result 3"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>
       <portSpacing port="source_input 3" spacing="0"/>
