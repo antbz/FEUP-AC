@@ -21,7 +21,7 @@
         <list key="macros"/>
         <parameter key="fail_for_unknown_macros" value="true"/>
       </operator>
-      <operator activated="true" class="subprocess" compatibility="9.10.001" expanded="true" height="82" name="Feature Selection" width="90" x="380" y="34">
+      <operator activated="true" class="subprocess" compatibility="9.10.001" expanded="true" height="103" name="Feature Selection" width="90" x="380" y="34">
         <process expanded="true">
           <operator activated="false" class="optimize_selection_backward" compatibility="9.10.001" expanded="true" height="103" name="Backward Elimination" width="90" x="447" y="187">
             <parameter key="maximal_number_of_eliminations" value="30"/>
@@ -248,11 +248,13 @@
           <connect from_port="in 1" to_op="Ensemble-FS" to_port="exampleset"/>
           <connect from_op="Ensemble-FS" from_port="weights" to_op="Select by Weights" to_port="weights"/>
           <connect from_op="Ensemble-FS" from_port="exampleset" to_op="Select by Weights" to_port="example set input"/>
+          <connect from_op="Ensemble-FS" from_port="robustness" to_port="out 2"/>
           <connect from_op="Select by Weights" from_port="example set output" to_port="out 1"/>
           <portSpacing port="source_in 1" spacing="0"/>
           <portSpacing port="source_in 2" spacing="0"/>
           <portSpacing port="sink_out 1" spacing="0"/>
           <portSpacing port="sink_out 2" spacing="0"/>
+          <portSpacing port="sink_out 3" spacing="0"/>
         </process>
       </operator>
       <connect from_port="input 1" to_op="Execute prepare" to_port="input 1"/>
