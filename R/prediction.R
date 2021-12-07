@@ -83,7 +83,7 @@ generate.prediction(test.dataset, prediction[,"-1"], toCSV = TRUE)
 
 ## Clean prediction csv
 
-predictions <- read.csv("../prediction_testing_dataset.csv",sep = ";")
+predictions <- read.csv("../prediction_rf.csv",sep = ";")
 predictions <- dplyr::select(predictions, -c("status","prediction","positive"))
 predictions <- rename(predictions, "Id" = "loan_id") %>% rename("Predicted" = "negative")
 write.csv(predictions,"../prediction_clean.csv",sep = ",", row.names = FALSE)
