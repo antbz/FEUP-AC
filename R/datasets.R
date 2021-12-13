@@ -134,7 +134,7 @@ transacions.dataset <- function(train = TRUE) {
         "interest credited" = "interest"
     )) %>%
     mutate(is_sanction = (as.character(k_symbol) == "sanction interest if negative balance")) %>%
-    dplyr::select(-c(bank, account, trans_day, k_symbol, date))
+    dplyr::select(-c(bank, account, trans_day, k_symbol))
 }
 
 loan.dataset <- function(train = TRUE) {
@@ -199,7 +199,7 @@ demograph.dataset <- function() {
     mutate(unemploymant_rate_95 = as.numeric(as.character(unemploymant_rate_95))) %>%
     mutate(commited_crimes_95 = as.numeric(as.character(commited_crimes_95))) %>%
     mutate(unemploymant_rate_95 = ifelse(is.na(unemploymant_rate_95), mean(unemploymant_rate_95, na.rm=TRUE), unemploymant_rate_95)) %>%
-    mutate(commited_crimes_95 = ifelse(is.na(commited_crimes_95), mean(commited_crimes_95, na.rm=TRUE), commited_crimes_95)) %>%
+    mutate(commited_crimes_95 = ifelse(is.na(commited_crimes_95), floor(mean(commited_crimes_95, na.rm=TRUE)), commited_crimes_95)) %>%
     dplyr::select(-name)
 
 
@@ -211,6 +211,8 @@ demograph.dataset <- function() {
 aggregate.transactions <- function() {
   agg.transactions <<- transactions %>%
     group_by(account_id) %>%
+    #Sort balance by date
+    arrange(date,.by_group = TRUE) %>%
     # Number of operations
     mutate(n_operation = n()) %>%
     # Count and Ratio for Credit or Withdrawal operations
@@ -238,6 +240,7 @@ aggregate.transactions <- function() {
     mutate(amount_mean = mean(amount)) %>%
     mutate(amount_std = sd(amount)) %>%
     # Min, max, mean, sd for balance
+    mutate(balance_last = last(balance)) %>%
     mutate(balance_min = min(balance)) %>%
     mutate(balance_max = max(balance)) %>%
     mutate(balance_mean = mean(balance)) %>%
@@ -245,7 +248,7 @@ aggregate.transactions <- function() {
     # Number of sanctions
     mutate(n_sanctions = sum(is_sanction)) %>%
     # Remove unwanted columns
-    dplyr::select(-c(trans_id, type, operation, amount, balance, trans_year, trans_month, is_sanction)) %>%
+    dplyr::select(-c(trans_id, type, operation, amount, balance, trans_year, trans_month, is_sanction, date)) %>%
     # Unique
     distinct
 }
@@ -296,6 +299,8 @@ get.train.dataset <- function() {
     mutate(n_remittance_bank = n_remittance_bank / account_days) %>%
     mutate(n_withdraw_cash = n_withdraw_cash / account_days) %>%
     mutate(n_sanctions = n_sanctions / account_days) %>%
+    mutate(until_broke = balance_last / payments) %>%
+    mutate(can_afford = average_salary > payments) %>%
 
     # Drop unwanted columns
     dplyr::select(-c(
@@ -351,16 +356,18 @@ get.test.dataset <- function() {
 
     # Join with transactions
     left_join(agg.transactions, by = "account_id") %>%
-    mutate(n_operation_per_day = n_operation / account_days) %>%
-    mutate(n_credit_per_day = n_credit / account_days) %>%
-    mutate(n_withdrawal_per_day = n_withdrawal / account_days) %>%
-    mutate(n_collect_bank_per_day = n_collect_bank / account_days) %>%
-    mutate(n_withdraw_card_per_day = n_withdraw_card / account_days) %>%
-    mutate(n_credit_cash_per_day = n_credit_cash / account_days) %>%
-    mutate(n_interest_per_day = n_interest / account_days) %>%
-    mutate(n_remittance_bank_per_day = n_remittance_bank / account_days) %>%
-    mutate(n_withdraw_cash_per_day = n_withdraw_cash / account_days) %>%
-    mutate(n_sanctions_per_day = n_sanctions / account_days) %>%
+    mutate(n_operation = n_operation / account_days) %>%
+    mutate(n_credit = n_credit / account_days) %>%
+    mutate(n_withdrawal = n_withdrawal / account_days) %>%
+    mutate(n_collect_bank = n_collect_bank / account_days) %>%
+    mutate(n_withdraw_card = n_withdraw_card / account_days) %>%
+    mutate(n_credit_cash = n_credit_cash / account_days) %>%
+    mutate(n_interest = n_interest / account_days) %>%
+    mutate(n_remittance_bank = n_remittance_bank / account_days) %>%
+    mutate(n_withdraw_cash = n_withdraw_cash / account_days) %>%
+    mutate(n_sanctions = n_sanctions / account_days) %>%
+    mutate(until_broke = balance_last / payments) %>%
+    mutate(can_afford = average_salary > payments) %>%
 
     # Drop unwanted columns
     dplyr::select(-c(
