@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_train" width="90" x="45" y="85">
+      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_train" width="90" x="45" y="34">
         <parameter key="process_location" value="read_train"/>
         <parameter key="use_input" value="true"/>
         <parameter key="store_output" value="false"/>
@@ -21,38 +21,18 @@
         <list key="macros"/>
         <parameter key="fail_for_unknown_macros" value="true"/>
       </operator>
-      <operator activated="false" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="82" name="Execute feature_no_split" width="90" x="179" y="85">
-        <parameter key="process_location" value="feature_no_split"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="false" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute feature_sampling (2)" width="90" x="179" y="442">
-        <parameter key="process_location" value="feature_sampling"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="false" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="82" name="Execute smote" width="90" x="313" y="85">
-        <parameter key="process_location" value="smote"/>
-        <parameter key="use_input" value="true"/>
-        <parameter key="store_output" value="false"/>
-        <parameter key="propagate_metadata_recursively" value="true"/>
-        <parameter key="cache_process" value="true"/>
-        <list key="macros"/>
-        <parameter key="fail_for_unknown_macros" value="true"/>
-      </operator>
-      <operator activated="true" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize RF" width="90" x="447" y="85">
+      <operator activated="true" breakpoints="before" class="concurrency:optimize_parameters_grid" compatibility="9.10.001" expanded="true" height="124" name="Optimize XGBoost" width="90" x="447" y="34">
         <list key="parameters">
-          <parameter key="Random Forest (3).criterion" value="information_gain,gain_ratio,gini_index,least_square"/>
-          <parameter key="Random Forest (3).maximal_depth" value="[1.0;100.0;10;quadratic]"/>
-          <parameter key="Random Forest (3).number_of_trees" value="[1.0;100.0;10;quadratic]"/>
+          <parameter key="XGBoost.top_k" value="[1;30;10;quadratic]"/>
+          <parameter key="XGBoost.sample_type" value="weighted"/>
+          <parameter key="XGBoost.updater" value="shotgun"/>
+          <parameter key="XGBoost.learning_rate" value="[0.01;1;10;quadratic]"/>
+          <parameter key="XGBoost.booster" value="DART"/>
+          <parameter key="XGBoost.rounds" value="[1.0;50.0;10;quadratic]"/>
+          <parameter key="XGBoost.feature_selector" value="cyclic"/>
+          <parameter key="Cross Validation.number_of_folds" value="[4;7;4;quadratic]"/>
+          <parameter key="XGBoost.tree_method" value="auto"/>
+          <parameter key="XGBoost.normalize_type" value="tree"/>
         </list>
         <parameter key="error_handling" value="ignore error"/>
         <parameter key="log_performance" value="true"/>
@@ -60,25 +40,16 @@
         <parameter key="synchronize" value="false"/>
         <parameter key="enable_parallel_execution" value="true"/>
         <process expanded="true">
-          <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.001" expanded="true" height="145" name="Cross Validation (2)" width="90" x="380" y="34">
+          <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.001" expanded="true" height="145" name="Cross Validation" width="90" x="380" y="34">
             <parameter key="split_on_batch_attribute" value="false"/>
             <parameter key="leave_one_out" value="false"/>
-            <parameter key="number_of_folds" value="5"/>
+            <parameter key="number_of_folds" value="7"/>
             <parameter key="sampling_type" value="stratified sampling"/>
             <parameter key="use_local_random_seed" value="false"/>
             <parameter key="local_random_seed" value="1992"/>
             <parameter key="enable_parallel_execution" value="true"/>
             <process expanded="true">
-              <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute feature_no_split (2)" width="90" x="45" y="34">
-                <parameter key="process_location" value="feature_no_split"/>
-                <parameter key="use_input" value="true"/>
-                <parameter key="store_output" value="false"/>
-                <parameter key="propagate_metadata_recursively" value="true"/>
-                <parameter key="cache_process" value="true"/>
-                <list key="macros"/>
-                <parameter key="fail_for_unknown_macros" value="true"/>
-              </operator>
-              <operator activated="true" class="operator_toolbox:smote" compatibility="2.12.000" expanded="true" height="82" name="SMOTE Upsampling" width="90" x="179" y="34">
+              <operator activated="false" class="operator_toolbox:smote" compatibility="2.12.000" expanded="true" height="82" name="SMOTE Upsampling" width="90" x="112" y="136">
                 <parameter key="number_of_neighbours" value="5"/>
                 <parameter key="normalize" value="true"/>
                 <parameter key="equalize_classes" value="true"/>
@@ -89,29 +60,30 @@
                 <parameter key="use_local_random_seed" value="false"/>
                 <parameter key="local_random_seed" value="1992"/>
               </operator>
-              <operator activated="true" class="concurrency:parallel_random_forest" compatibility="9.10.001" expanded="true" height="103" name="Random Forest (3)" width="90" x="313" y="34">
-                <parameter key="number_of_trees" value="100"/>
-                <parameter key="criterion" value="information_gain"/>
-                <parameter key="maximal_depth" value="100"/>
-                <parameter key="apply_pruning" value="true"/>
-                <parameter key="confidence" value="0.168"/>
-                <parameter key="apply_prepruning" value="true"/>
-                <parameter key="minimal_gain" value="0.01"/>
-                <parameter key="minimal_leaf_size" value="1"/>
-                <parameter key="minimal_size_for_split" value="5"/>
-                <parameter key="number_of_prepruning_alternatives" value="3"/>
-                <parameter key="random_splits" value="false"/>
-                <parameter key="guess_subset_ratio" value="true"/>
-                <parameter key="subset_ratio" value="0.2"/>
-                <parameter key="voting_strategy" value="confidence vote"/>
-                <parameter key="use_local_random_seed" value="false"/>
-                <parameter key="local_random_seed" value="1992"/>
-                <parameter key="enable_parallel_execution" value="true"/>
+              <operator activated="true" class="xgboost:xgboost" compatibility="0.1.001" expanded="true" height="82" name="XGBoost" width="90" x="313" y="34">
+                <parameter key="booster" value="DART"/>
+                <parameter key="rounds" value="50"/>
+                <parameter key="early_stopping" value="none"/>
+                <parameter key="early_stopping_rounds" value="10"/>
+                <parameter key="learning_rate" value="1.0"/>
+                <parameter key="min_split_loss" value="0.0"/>
+                <parameter key="max_depth" value="3"/>
+                <parameter key="min_child_weight" value="1.0"/>
+                <parameter key="subsample" value="1.0"/>
+                <parameter key="tree_method" value="auto"/>
+                <parameter key="lambda" value="1.0"/>
+                <parameter key="alpha" value="0.0"/>
+                <parameter key="sample_type" value="weighted"/>
+                <parameter key="normalize_type" value="tree"/>
+                <parameter key="rate_drop" value="0.0"/>
+                <parameter key="skip_drop" value="0.0"/>
+                <parameter key="updater" value="shotgun"/>
+                <parameter key="feature_selector" value="cyclic"/>
+                <parameter key="top_k" value="30"/>
+                <enumeration key="expert_parameters"/>
               </operator>
-              <connect from_port="training set" to_op="Execute feature_no_split (2)" to_port="input 1"/>
-              <connect from_op="Execute feature_no_split (2)" from_port="result 1" to_op="SMOTE Upsampling" to_port="exa"/>
-              <connect from_op="SMOTE Upsampling" from_port="ups" to_op="Random Forest (3)" to_port="training set"/>
-              <connect from_op="Random Forest (3)" from_port="model" to_port="model"/>
+              <connect from_port="training set" to_op="XGBoost" to_port="training set"/>
+              <connect from_op="XGBoost" from_port="model" to_port="model"/>
               <portSpacing port="source_training set" spacing="0"/>
               <portSpacing port="sink_model" spacing="0"/>
               <portSpacing port="sink_through 1" spacing="0"/>
@@ -121,7 +93,7 @@
                 <list key="application_parameters"/>
                 <parameter key="create_view" value="false"/>
               </operator>
-              <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance Random Forest (2)" width="90" x="179" y="34">
+              <operator activated="true" class="performance_binominal_classification" compatibility="9.10.001" expanded="true" height="82" name="Performance XGBoost" width="90" x="179" y="34">
                 <parameter key="manually_set_positive_class" value="true"/>
                 <parameter key="positive_class" value="-1"/>
                 <parameter key="main_criterion" value="AUC"/>
@@ -151,8 +123,8 @@
               </operator>
               <connect from_port="model" to_op="Apply Model" to_port="model"/>
               <connect from_port="test set" to_op="Apply Model" to_port="unlabelled data"/>
-              <connect from_op="Apply Model" from_port="labelled data" to_op="Performance Random Forest (2)" to_port="labelled data"/>
-              <connect from_op="Performance Random Forest (2)" from_port="performance" to_port="performance 1"/>
+              <connect from_op="Apply Model" from_port="labelled data" to_op="Performance XGBoost" to_port="labelled data"/>
+              <connect from_op="Performance XGBoost" from_port="performance" to_port="performance 1"/>
               <portSpacing port="source_model" spacing="0"/>
               <portSpacing port="source_test set" spacing="0"/>
               <portSpacing port="source_through 1" spacing="0"/>
@@ -161,9 +133,9 @@
               <portSpacing port="sink_performance 2" spacing="0"/>
             </process>
           </operator>
-          <connect from_port="input 1" to_op="Cross Validation (2)" to_port="example set"/>
-          <connect from_op="Cross Validation (2)" from_port="model" to_port="model"/>
-          <connect from_op="Cross Validation (2)" from_port="performance 1" to_port="performance"/>
+          <connect from_port="input 1" to_op="Cross Validation" to_port="example set"/>
+          <connect from_op="Cross Validation" from_port="model" to_port="model"/>
+          <connect from_op="Cross Validation" from_port="performance 1" to_port="performance"/>
           <portSpacing port="source_input 1" spacing="0"/>
           <portSpacing port="source_input 2" spacing="0"/>
           <portSpacing port="sink_performance" spacing="0"/>
@@ -171,7 +143,7 @@
           <portSpacing port="sink_output 1" spacing="0"/>
         </process>
       </operator>
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_test" width="90" x="45" y="238">
+      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute read_test" width="90" x="45" y="187">
         <parameter key="process_location" value="read_test"/>
         <parameter key="use_input" value="true"/>
         <parameter key="store_output" value="false"/>
@@ -180,11 +152,11 @@
         <list key="macros"/>
         <parameter key="fail_for_unknown_macros" value="true"/>
       </operator>
-      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply SVM" width="90" x="246" y="238">
+      <operator activated="true" class="apply_model" compatibility="9.10.001" expanded="true" height="82" name="Apply XGBoost" width="90" x="313" y="187">
         <list key="application_parameters"/>
         <parameter key="create_view" value="false"/>
       </operator>
-      <operator activated="true" class="select_attributes" compatibility="9.10.001" expanded="true" height="82" name="Select Attributes (2)" width="90" x="380" y="238">
+      <operator activated="true" class="select_attributes" compatibility="9.10.001" expanded="true" height="82" name="Select Attributes" width="90" x="447" y="187">
         <parameter key="attribute_filter_type" value="subset"/>
         <parameter key="attribute" value=""/>
         <parameter key="attributes" value="confidence(-1)"/>
@@ -198,7 +170,7 @@
         <parameter key="invert_selection" value="false"/>
         <parameter key="include_special_attributes" value="false"/>
       </operator>
-      <operator activated="true" class="blending:rename" compatibility="9.10.001" expanded="true" height="82" name="Rename (2)" width="90" x="514" y="238">
+      <operator activated="true" class="blending:rename" compatibility="9.10.001" expanded="true" height="82" name="Rename" width="90" x="581" y="187">
         <list key="rename attributes">
           <parameter key="prediction(status)" value="prediction"/>
           <parameter key="confidence(1)" value="positive"/>
@@ -207,8 +179,8 @@
         <parameter key="from_attribute" value=""/>
         <parameter key="to_attribute" value=""/>
       </operator>
-      <operator activated="true" class="write_csv" compatibility="9.10.001" expanded="true" height="82" name="Write RF" width="90" x="648" y="238">
-        <parameter key="csv_file" value="C:/Users/GoncaloAlves/Desktop/FEUP/FEUP-AC/prediction_rf.csv"/>
+      <operator activated="true" class="write_csv" compatibility="9.10.001" expanded="true" height="82" name="Write XGboost" width="90" x="715" y="187">
+        <parameter key="csv_file" value="C:/Users/GoncaloAlves/Desktop/FEUP/FEUP-AC/prediction_xgboost.csv"/>
         <parameter key="column_separator" value=";"/>
         <parameter key="write_attribute_names" value="true"/>
         <parameter key="quote_nominal_values" value="true"/>
@@ -217,19 +189,20 @@
         <parameter key="append_to_file" value="false"/>
         <parameter key="encoding" value="SYSTEM"/>
       </operator>
-      <connect from_op="Execute read_train" from_port="result 1" to_op="Optimize RF" to_port="input 1"/>
-      <connect from_op="Execute feature_no_split" from_port="result 1" to_op="Execute smote" to_port="input 1"/>
-      <connect from_op="Optimize RF" from_port="performance" to_port="result 1"/>
-      <connect from_op="Optimize RF" from_port="model" to_op="Apply SVM" to_port="model"/>
-      <connect from_op="Optimize RF" from_port="parameter set" to_port="result 2"/>
-      <connect from_op="Execute read_test" from_port="result 1" to_op="Apply SVM" to_port="unlabelled data"/>
-      <connect from_op="Apply SVM" from_port="labelled data" to_op="Select Attributes (2)" to_port="example set input"/>
-      <connect from_op="Select Attributes (2)" from_port="example set output" to_op="Rename (2)" to_port="example set input"/>
-      <connect from_op="Rename (2)" from_port="example set output" to_op="Write RF" to_port="input"/>
+      <connect from_op="Execute read_train" from_port="result 1" to_op="Optimize XGBoost" to_port="input 1"/>
+      <connect from_op="Optimize XGBoost" from_port="performance" to_port="result 1"/>
+      <connect from_op="Optimize XGBoost" from_port="model" to_op="Apply XGBoost" to_port="model"/>
+      <connect from_op="Optimize XGBoost" from_port="parameter set" to_port="result 2"/>
+      <connect from_op="Execute read_test" from_port="result 1" to_op="Apply XGBoost" to_port="unlabelled data"/>
+      <connect from_op="Apply XGBoost" from_port="labelled data" to_op="Select Attributes" to_port="example set input"/>
+      <connect from_op="Select Attributes" from_port="example set output" to_op="Rename" to_port="example set input"/>
+      <connect from_op="Select Attributes" from_port="original" to_port="result 3"/>
+      <connect from_op="Rename" from_port="example set output" to_op="Write XGboost" to_port="input"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="sink_result 1" spacing="0"/>
       <portSpacing port="sink_result 2" spacing="0"/>
       <portSpacing port="sink_result 3" spacing="0"/>
+      <portSpacing port="sink_result 4" spacing="0"/>
     </process>
   </operator>
 </process>

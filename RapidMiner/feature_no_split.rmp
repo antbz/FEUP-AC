@@ -12,7 +12,7 @@
     <parameter key="process_duration_for_mail" value="30"/>
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
-      <operator activated="true" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute prepare_no_split" width="90" x="179" y="34">
+      <operator activated="false" class="productivity:execute_process" compatibility="9.10.001" expanded="true" height="68" name="Execute prepare_no_split" width="90" x="179" y="136">
         <parameter key="process_location" value="//Local Repository/processes/prepare_no_split"/>
         <parameter key="use_input" value="true"/>
         <parameter key="store_output" value="false"/>
@@ -114,8 +114,40 @@
               <portSpacing port="sink_performance" spacing="0"/>
             </process>
           </operator>
-          <operator activated="false" class="optimize_selection_forward" compatibility="9.10.001" expanded="true" height="103" name="Forward Selection" width="90" x="179" y="34">
-            <parameter key="maximal_number_of_attributes" value="10"/>
+          <operator activated="true" class="featselext:ensemble_feature_selection" compatibility="1.1.004" expanded="true" height="103" name="Ensemble-FS" width="90" x="313" y="34">
+            <parameter key="ensemble_size" value="10"/>
+            <parameter key="method" value="top-k"/>
+            <parameter key="k" value="50"/>
+            <parameter key="min_rounds" value="0"/>
+            <parameter key="w" value="0.5"/>
+            <parameter key="use_absolute_weights" value="false"/>
+            <parameter key="normalize_weights" value="true"/>
+            <parameter key="subsets_or_bootstrap" value="subsets"/>
+            <parameter key="ratio" value="1.0"/>
+            <parameter key="leave_one_out" value="false"/>
+            <parameter key="sampling_type" value="stratified sampling"/>
+            <parameter key="local_random_seed" value="2001"/>
+            <process expanded="true">
+              <operator activated="true" class="featselext:mrmr_feature_selection" compatibility="1.1.004" expanded="true" height="82" name="MRMR-FS" width="90" x="179" y="34">
+                <parameter key="normalize_weights" value="false"/>
+                <parameter key="sort_weights" value="true"/>
+                <parameter key="sort_direction" value="ascending"/>
+                <parameter key="sets_or_ranks" value="sets"/>
+                <parameter key="calculate full ranking" value="true"/>
+                <parameter key="k" value="100"/>
+                <parameter key="relevance_redundancy_relation" value="quotient"/>
+                <parameter key="use_ensemble_method" value="none"/>
+                <parameter key="ensemble_size" value="10"/>
+                <parameter key="logging" value="false"/>
+              </operator>
+              <connect from_port="exampleset" to_op="MRMR-FS" to_port="example set"/>
+              <connect from_op="MRMR-FS" from_port="weights" to_port="weights"/>
+              <portSpacing port="source_exampleset" spacing="0"/>
+              <portSpacing port="sink_weights" spacing="0"/>
+            </process>
+          </operator>
+          <operator activated="false" class="optimize_selection_forward" compatibility="9.10.001" expanded="true" height="103" name="Forward Selection" width="90" x="313" y="187">
+            <parameter key="maximal_number_of_attributes" value="15"/>
             <parameter key="speculative_rounds" value="15"/>
             <parameter key="stopping_behavior" value="without increase"/>
             <parameter key="use_relative_increase" value="true"/>
@@ -124,7 +156,7 @@
               <operator activated="true" class="concurrency:cross_validation" compatibility="9.10.001" expanded="true" height="145" name="Cross Validation" width="90" x="380" y="34">
                 <parameter key="split_on_batch_attribute" value="false"/>
                 <parameter key="leave_one_out" value="false"/>
-                <parameter key="number_of_folds" value="10"/>
+                <parameter key="number_of_folds" value="5"/>
                 <parameter key="sampling_type" value="automatic"/>
                 <parameter key="use_local_random_seed" value="false"/>
                 <parameter key="local_random_seed" value="1992"/>
@@ -205,38 +237,6 @@
               <portSpacing port="sink_performance" spacing="0"/>
             </process>
           </operator>
-          <operator activated="true" class="featselext:ensemble_feature_selection" compatibility="1.1.004" expanded="true" height="103" name="Ensemble-FS" width="90" x="313" y="34">
-            <parameter key="ensemble_size" value="10"/>
-            <parameter key="method" value="top-k"/>
-            <parameter key="k" value="100"/>
-            <parameter key="min_rounds" value="0"/>
-            <parameter key="w" value="0.5"/>
-            <parameter key="use_absolute_weights" value="false"/>
-            <parameter key="normalize_weights" value="true"/>
-            <parameter key="subsets_or_bootstrap" value="subsets"/>
-            <parameter key="ratio" value="1.0"/>
-            <parameter key="leave_one_out" value="false"/>
-            <parameter key="sampling_type" value="stratified sampling"/>
-            <parameter key="local_random_seed" value="2001"/>
-            <process expanded="true">
-              <operator activated="true" class="featselext:mrmr_feature_selection" compatibility="1.1.004" expanded="true" height="82" name="MRMR-FS" width="90" x="179" y="34">
-                <parameter key="normalize_weights" value="false"/>
-                <parameter key="sort_weights" value="true"/>
-                <parameter key="sort_direction" value="ascending"/>
-                <parameter key="sets_or_ranks" value="sets"/>
-                <parameter key="calculate full ranking" value="true"/>
-                <parameter key="k" value="100"/>
-                <parameter key="relevance_redundancy_relation" value="quotient"/>
-                <parameter key="use_ensemble_method" value="none"/>
-                <parameter key="ensemble_size" value="10"/>
-                <parameter key="logging" value="false"/>
-              </operator>
-              <connect from_port="exampleset" to_op="MRMR-FS" to_port="example set"/>
-              <connect from_op="MRMR-FS" from_port="weights" to_port="weights"/>
-              <portSpacing port="source_exampleset" spacing="0"/>
-              <portSpacing port="sink_weights" spacing="0"/>
-            </process>
-          </operator>
           <operator activated="true" class="select_by_weights" compatibility="9.10.001" expanded="true" height="103" name="Select by Weights" width="90" x="581" y="34">
             <parameter key="weight_relation" value="greater equals"/>
             <parameter key="weight" value="1.0"/>
@@ -255,8 +255,7 @@
           <portSpacing port="sink_out 2" spacing="0"/>
         </process>
       </operator>
-      <connect from_port="input 1" to_op="Execute prepare_no_split" to_port="input 1"/>
-      <connect from_op="Execute prepare_no_split" from_port="result 1" to_op="Feature Selection" to_port="in 1"/>
+      <connect from_port="input 1" to_op="Feature Selection" to_port="in 1"/>
       <connect from_op="Feature Selection" from_port="out 1" to_port="result 1"/>
       <portSpacing port="source_input 1" spacing="0"/>
       <portSpacing port="source_input 2" spacing="0"/>

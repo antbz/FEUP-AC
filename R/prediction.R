@@ -92,7 +92,9 @@ generate.prediction(test.dataset, prediction[,"-1"], toCSV = TRUE)
 
 ## Clean prediction csv
 
-predictions <- read.csv("../prediction_rf.csv",sep = ";")
+predictions <- read.csv("../prediction_xgboost.csv",sep = ";")
 predictions <- dplyr::select(predictions, -c("status","prediction","positive"))
-predictions <- rename(predictions, "Id" = "loan_id") %>% rename("Predicted" = "negative")
+predictions <- rename(predictions, "Id" = "loan_id") %>% rename("Predicted" = "negative") %>%
+  mutate(Predicted = ifelse(Predicted >= 0.95,1,Predicted)) %>%
+  mutate(Predicted = ifelse(Predicted <= 0.05, 0, Predicted))
 write.csv(predictions,"../prediction_clean.csv",sep = ",", row.names = FALSE)
