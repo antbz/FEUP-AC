@@ -50,15 +50,15 @@ prepare.datasets <- function(train = TRUE) {
 }
 
 account.dataset <- function() {
-  account <- read.csv("../data/account.csv", sep = ";")
-  account <- dplyr::distinct(account)
+  account_raw <- read.csv("../data/account.csv", sep = ";")
+  account_raw <- dplyr::distinct(account_raw)
 
   # missing.values <- sapply(account, function(x) sum(is.na(x)))
   # mv.account <- data.frame(missing.values)
   # summary(account)
   # account %>% skim()
 
-  account <<- account %>%
+  account <<- account_raw %>%
     mutate(account_year = date %/% 10000 + 1900) %>%
     mutate(account_month = date %% 10000 %/% 100) %>%
     mutate(account_day = date %% 100) %>%
@@ -68,53 +68,59 @@ account.dataset <- function() {
         "issuance after transaction" = 1
     )) %>%
     dplyr::select(-c(date, district_id))
+
+  write.csv(account, "../data/account_clean.csv")
 }
 
 client.dataset <- function() {
-  client <- read.csv("../data/client.csv", sep = ";")
-  client <- dplyr::distinct(client)
+  client_raw <- read.csv("../data/client.csv", sep = ";")
+  client_raw <- dplyr::distinct(client_raw)
 
   # missing.values <- sapply(client, function(x) sum(is.na(x)))
   # mv.client <- data.frame(missing.values)
   # summary(client)
   # client  %>% skim()
 
-  client <<- client %>%
+  client <<- client_raw %>%
     mutate(birth_year = birth_number %/% 10000 + 1900) %>%
     mutate(birth_month = birth_number %% 10000 %/% 100) %>%
     mutate(birth_day = birth_number %% 100) %>%
     mutate(gender = ifelse(birth_month > 12, 0, 1)) %>%
     mutate(birth_month = ifelse(birth_month > 12, birth_month - 50, birth_month)) %>%
     dplyr::select(-c(birth_number))
+
+  write.csv(client, "../data/client_clean.csv")
 }
 
 disposition.dataset <- function() {
-  disposition <- read.csv("../data/disp.csv", sep = ";")
-  disposition <- dplyr::distinct(disposition)
+  disposition_raw <- read.csv("../data/disp.csv", sep = ";")
+  disposition_raw <- dplyr::distinct(disposition_raw)
 
   # missing.values <- sapply(disposition, function(x) sum(is.na(x)))
   # mv.disposition <- data.frame(missing.values)
   # summary(disposition)
   # disposition %>% skim()
 
-  disposition <<- disposition %>%
+  disposition <<- disposition_raw %>%
     group_by(account_id) %>% mutate(n_clients = n()) %>% ungroup() %>%
     filter(type == "OWNER") %>%
     dplyr::select(-type)
+
+  write.csv(disposition, "../data/disposition_clean.csv")
 }
 
 transacions.dataset <- function(train = TRUE) {
-  if (train) transactions <- read.csv("../data/trans_train.csv", sep = ";")
-  else transactions <- read.csv("../data/trans_test.csv", sep = ";")
+  if (train) transactions_raw <- read.csv("../data/trans_train.csv", sep = ";")
+  else transactions_raw <- read.csv("../data/trans_test.csv", sep = ";")
 
-  transactions <- dplyr::distinct(transactions)
+  transactions_raw <- dplyr::distinct(transactions_raw)
 
   # missing.values <- sapply(transactions, function(x) sum(is.na(x)))
   # mv.transactions <- data.frame(missing.values)
   # summary(transactions)
   # transactions %>% skim()
 
-  transactions <<- transactions %>%
+  transactions <<- transactions_raw %>%
     mutate(trans_year = date %/% 10000 + 1900) %>%
     mutate(trans_month = date %% 10000 %/% 100) %>%
     mutate(trans_day = date %% 100) %>%
@@ -135,54 +141,60 @@ transacions.dataset <- function(train = TRUE) {
     )) %>%
     mutate(is_sanction = (as.character(k_symbol) == "sanction interest if negative balance")) %>%
     dplyr::select(-c(bank, account, trans_day, k_symbol))
+
+  write.csv(transactions, "../data/transactions_clean.csv")
 }
 
 loan.dataset <- function(train = TRUE) {
-  if (train) loan <- read.csv("../data/loan_train.csv", sep = ";")
-  else loan <- read.csv("../data/loan_test.csv", sep = ";")
+  if (train) loan_raw <- read.csv("../data/loan_train.csv", sep = ";")
+  else loan_raw <- read.csv("../data/loan_test.csv", sep = ";")
   # loan <- read.csv("data/loan_train.csv", sep = ";")
-  loan <- dplyr::distinct(loan)
+  loan_raw <- dplyr::distinct(loan_raw)
 
   # missing.values <- sapply(loan, function(x) sum(is.na(x)))
   # mv.loan <- data.frame(missing.values)
   # summary(loan)
   # loan %>% skim()
 
-  loan <<- loan %>%
+  loan <<- loan_raw %>%
     mutate(loan_year = date %/% 10000 + 1900) %>%
     mutate(loan_month = date %% 10000 %/% 100) %>%
     mutate(loan_day = date %% 100) %>%
     dplyr::select(-c(date))
+
+  write.csv(loan, "../data/loan_clean.csv")
 }
 
 card.dataset <- function(train = TRUE) {
-  if (train) card <- read.csv("../data/card_train.csv", sep = ";")
-  else card <- read.csv("../data/card_test.csv", sep = ";")
+  if (train) card_raw <- read.csv("../data/card_train.csv", sep = ";")
+  else card_raw <- read.csv("../data/card_test.csv", sep = ";")
   # card <- read.csv("data/card_train.csv", sep = ";")
-  card <- dplyr::distinct(card)
+  card_raw <- dplyr::distinct(card_raw)
 
   # missing.values <- sapply(card, function(x) sum(is.na(x)))
   # mv.card <- data.frame(missing.values)
   # summary(card)
   # card %>% skim()
 
-  card <<- card %>%
+  card <<- card_raw %>%
     mutate(card_year = issued %/% 10000 + 1900) %>%
     mutate(card_month = issued %% 10000 %/% 100) %>%
     mutate(card_day = issued %% 100) %>%
     dplyr::select(-c(issued, card_day))
+
+  write.csv(card, "../data/card_clean.csv")
 }
 
 demograph.dataset <- function() {
-  demograph <- read.csv("../data/district.csv", sep = ";")
-  demograph <- dplyr::distinct(demograph)
+  demograph_raw <- read.csv("../data/district.csv", sep = ";")
+  demograph_raw <- dplyr::distinct(demograph_raw)
 
   # missing.values <- sapply(demograph, function(x) sum(is.na(x)))
   # mv.demograph <- data.frame(missing.values)
   # summary(demograph)
   # demograph %>% skim()
 
-  demograph <<- demograph %>%
+  demograph <<- demograph_raw %>%
     rename("inhabitants" = "no..of.inhabitants") %>%
     rename("municipalities_inhabitants_under_499" = "no..of.municipalities.with.inhabitants...499") %>%
     rename("municipalities_inhabitants_500_1999" = "no..of.municipalities.with.inhabitants.500.1999") %>%
@@ -202,6 +214,7 @@ demograph.dataset <- function() {
     mutate(commited_crimes_95 = ifelse(is.na(commited_crimes_95), floor(mean(commited_crimes_95, na.rm=TRUE)), commited_crimes_95)) %>%
     dplyr::select(-name)
 
+  write.csv(demograph, "../data/demograph_clean.csv")
 
 }
 
@@ -251,6 +264,8 @@ aggregate.transactions <- function() {
     dplyr::select(-c(trans_id, type, operation, amount, balance, trans_year, trans_month, is_sanction, date)) %>%
     # Unique
     distinct
+
+  write.csv(agg.transactions, "../data/agg.csv")
 }
 
 
