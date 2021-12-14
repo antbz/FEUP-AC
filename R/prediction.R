@@ -29,6 +29,15 @@ test.dataset <- dplyr::select(get.test.dataset(), -status)
 
 correlation.matrix <- rcorr(as.matrix(train.dataset))
 
+write.table(correlation.matrix$r,file="corr.txt")
+
+print(correlation.matrix)
+
+pdf("correlations.pdf", height=45, width=45)
+corrplot(correlation.matrix$r, type="lower", method="color", tl.cex = 3.5, tl.col = "black", cl.cex = 3.5)
+dev.off()
+
+
 corrplot(correlation.matrix$r, type="upper", order="hclust",
          p.mat = correlation.matrix$P, sig.level = 0.01, insig = "blank")
 

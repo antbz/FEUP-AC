@@ -317,13 +317,17 @@ get.train.dataset <- function() {
     mutate(until_broke = balance_last / payments) %>%
     mutate(can_afford = average_salary > payments) %>%
 
+    mutate(across(where(is.factor), as.character)) %>%
+    mutate(across(where(is.character), function(x){iconv(x, to = "ASCII//TRANSLIT")})) %>%
+    mutate(across(where(is.numeric), function(x) tidyr::replace_na(x, 0))) %>%
+
     # Drop unwanted columns
     dplyr::select(-c(
       loan_day,
       account_id, account_year, account_month, account_day,
       disp_id,
       client_id, birth_year, birth_month, birth_day,
-      district_id
+      district_id, region
     ))
 
   # Verify NA
@@ -333,7 +337,7 @@ get.train.dataset <- function() {
   # mv.data$pct <- round((mv.data$missing.values / mv.data$total)*100)
   # summary(data)
   #
-  write.csv(data, file = "../train_data.csv")
+  write.csv(data, file = "../train_data.csv", row.names = FALSE)
 
   return (data)
 }
@@ -384,6 +388,10 @@ get.test.dataset <- function() {
     mutate(until_broke = balance_last / payments) %>%
     mutate(can_afford = average_salary > payments) %>%
 
+    mutate(across(where(is.factor), as.character)) %>%
+    mutate(across(where(is.character), function(x){iconv(x, to = "ASCII//TRANSLIT")})) %>%
+    mutate(across(where(is.numeric), function(x) tidyr::replace_na(x, 0))) %>%
+
     # Drop unwanted columns
     dplyr::select(-c(
       loan_day,
@@ -401,11 +409,11 @@ get.test.dataset <- function() {
   # summary(data)
   #
 
-  write.csv(data,file = "../test_data.csv")
+  write.csv(data, file = "../test_data.csv", row.names = FALSE)
 
   return (data)
 }
 
-train.data <- get.train.dataset()
-test.data <- get.test.dataset()
+# train.data <- get.train.dataset()
+# test.data <- get.test.dataset()
 
